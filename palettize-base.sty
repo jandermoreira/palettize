@@ -1,0 +1,247 @@
+%! Package = palettize-base
+%! Author = Jander Moreira
+%! Date = 2024
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{palettize-base}[2024/07/26 v0.1 Provides tools to create color palettes.]
+
+
+\RequirePackage{xcolor}
+
+% Code
+
+\ExplSyntaxOn
+
+% Variants
+\cs_generate_variant:Nn \int_set:Nn { cn }
+\cs_generate_variant:Nn \seq_set_split:Nnn { cnn }
+\cs_generate_variant:Nn \seq_map_inline:Nn { cn }
+\cs_generate_variant:Nn \regex_extract_once:nnNTF { neNTF }
+
+% Variables
+\seq_new:N \g_palette_list_seq
+
+% Code
+
+% PLTCreatePalette: creates a new empty palette
+% #1: palette name
+\cs_new:Npn \new_palette:n #1 {
+    % \cs_if_exist:cTF { g_#1_colors_seq } {
+    %     \PackageWarning{palettize}{Palette~#1~already~exists.~Creation~ignored.}
+    % } {
+    \seq_put_right:Nn \g_palette_list_seq { #1 }
+    \seq_new:c { g_#1_colors_seq }
+    \int_new:c { g_#1_current_int }
+    \cs_if_exist:NTF \g_current_palette_tl { } {
+        \tl_new:N \g_current_palette_tl
+        \tl_gset:Nn \g_current_palette_tl { #1 }
+    }
+    % }
+    \reset_palette:n { #1 }
+}
+\NewExpandableDocumentCommand{\PLTCreatePalette}{ m }{
+    \new_palette:n { #1 }
+}
+
+% \PLTUseCurrentColor: sets PLTFGColor and PLTBGColor to the current color
+% #1: (optional) palette name; default: current palette
+\tl_new:N \l_current_fg_color_tl
+\tl_new:N \l_current_bg_color_tl
+\cs_new:Npn \select_current_color:n #1 {
+    \regex_extract_once:neNTF {
+        \b(.*?)\b\s*on\b\s*(.*)\b
+    } {
+        \seq_item:cn { g_#1_colors_seq  }{ \int_use:c { g_#1_current_int } + 1 }
+    } \l_color_seq {
+        \exp_args:NNe \tl_set:Nn \l_current_fg_color_tl { \seq_item:Nn \l_color_seq { 2 } }
+        \exp_args:NNe \tl_set:Nn \l_current_bg_color_tl { \seq_item:Nn \l_color_seq { 3 } }
+    } {
+        \tl_set:Nn \l_current_fg_color_tl { . }
+        \exp_args:NNe \tl_set:Nn \l_current_bg_color_tl {
+            \seq_item:cn { g_#1_colors_seq  }{ \int_use:c { g_#1_current_int } + 1 }
+        }
+    }
+}
+\NewDocumentCommand{\PLTUseCurrentColor}{ o }{
+    \IfValueTF{#1}{
+        \select_current_color:n { #1 }
+    }{
+        \select_current_color:n { \g_current_palette_tl }
+    }
+    \colorlet{PLTFGColor}{\tl_use:N \l_current_fg_color_tl}
+    \colorlet{PLTBGColor}{\tl_use:N \l_current_bg_color_tl}
+}
+
+
+% PLTUsePalette: set named palette as current
+% #1: palette name
+\cs_new:Npn \use_palette:n #1 {
+    \tl_set:Nn \g_current_palette_tl { #1 }
+}
+\NewDocumentCommand{\PLTUsePalette}{ m }{
+    \use_palette:n { #1 }
+    \PLTUseCurrentColor[#1]
+}
+
+
+% PLTSetPalette: defines the colors for the palette
+% #1: palette name
+% #2: comma-separated list of colors
+\cs_new:Npn \set_palette:nn #1#2 {
+    \seq_set_split:cnn { g_#1_colors_seq } { , } { #2 }
+}
+\NewDocumentCommand{\PLTSetPalette}{ m m }{
+    \set_palette:nn { #1 } { #2 }
+}
+
+
+% PLTResetPaletteLoop: sets current color to the first color
+% #1: palette name
+\cs_new:Npn \reset_palette:n #1 {
+    \int_set:cn { g_#1_current_int } { 0 }
+    \tl_gset:Nn \g_current_fg_color_tl {
+        \seq_item:cn { g_#1_colors_seq  }{ 1 }
+    }
+}
+\NewDocumentCommand{\PLTResetLoop}{ o }{
+    \IfValueTF{#1}{
+        \reset_palette:n { #1 }
+        \PLTUseCurrentColor[#1]
+    }{
+        \reset_palette:n  { \g_current_palette_tl }
+        \PLTUseCurrentColor[\g_current_palette_tl]
+    }
+}
+
+% set_fg_bg: separates foreground and background color (either single or pair)
+% #1: color specification
+\NewDocumentCommand{\LPTUsePalette}{ m }{
+    \select_current_color:n
+}
+
+
+% PLTFGColorName: gets current foreground color
+\NewDocumentCommand{\PLTFGColorName}{ o }{
+    \IfValueTF{#1}{
+        \select_current_color:n { #1 }
+    }{
+        \select_current_color:n { \g_current_palette_tl }
+    }
+    \tl_use:N \l_current_fg_color_tl
+}
+
+
+% PLTBGColorName: gets current background color
+\NewDocumentCommand{\PLTBGColorName}{ o }{
+    \IfValueTF{#1}{
+        \select_current_color:n { #1 }
+    }{
+        \select_current_color:n { \g_current_palette_tl }
+    }
+    \tl_use:N \l_current_bg_color_tl
+}
+
+% PLTPaletteName
+\NewDocumentCommand{\PLTPaletteName}{}{
+    \g_current_palette_tl
+}
+
+
+% % PLTUseCurrentColorByNumber: sets current fore- and background colors to
+% %   current color
+% % #1: palette name
+% % #2: number (starts at 1)
+% %
+% % Sets (global):
+% %   \g_current_fg_color_tl: current foreground color
+% %   \g_current_bg_color_tl: current background color
+% \cs_new:Npn \use_palette_by_number:nn #1#2 {
+%     \tl_set:Nn \l_current_color_tl {
+%         \seq_item:cn { g_#1_colors_seq  }{ #2 + 1 }
+%     }
+%     \exp_args:Ne \set_fg_bg:n \l_current_color_tl
+% }
+% \NewDocumentCommand{\PLTUseCurrentColorByNumber}{ m m }{
+%     \use_palette_by_number:nn { #1 } {
+%         \int_mod:nn { #2 - 1 } { \seq_count:c { g_#1_colors_seq }  }
+%     }
+% }
+
+
+% PLTNextColor: moves current color pointer to the next color
+% #1: (optional) palette name
+\cs_new:Npn \step_palette:n #1 {
+    % (\int_use:c { g_#1_current_int }~to~
+    \exp_args:Nno \int_gset:cn { g_#1_current_int } {
+        \int_mod:nn { \int_use:c { g_#1_current_int } + 1 } {
+            \seq_count:c { g_#1_colors_seq }
+        }
+    }
+    % \int_use:c { g_#1_current_int })
+}
+\NewDocumentCommand{\PLTNextColor}{ o }{
+    \IfValueTF{#1}{
+        \step_palette:n { #1 }
+        \PLTUseCurrentColor[#1]
+    }{
+        \step_palette:n { \g_current_palette_tl }
+        \PLTUseCurrentColor[\g_current_palette_tl]
+    }
+}
+
+
+% PLTLoopPaletteList: sequentialy executes commands on each created palette;
+%   palette name is available in \PLTCurrentPalette
+\NewExpandableDocumentCommand{\PLTLoopPaletteList}{ +m }{
+    \begingroup
+    \tl_clear_new:N \PLTCurrentPalette
+    \seq_map_inline:Nn \g_palette_list_seq {
+        \tl_set:Nn \PLTCurrentPalette { ##1 }
+        #1
+    }
+    \endgroup
+}
+
+% PLTLoopPalette: sequentialy executes commands on each color of a given palette;
+%   color name is available in \PLTCurrentColor
+\NewExpandableDocumentCommand{\PLTLoopPalette}{ m +m }{
+    \begingroup
+    \PLTUsePalette{#1}
+    \PLTResetLoop[#1]
+    \seq_map_inline:cn { g_#1_colors_seq } {
+        \PLTUseCurrentColor[#1]
+        #2
+        \PLTNextColor[#1]
+    }
+    \endgroup%
+}
+
+
+% PLTUseResource: loads resoources
+% #1: comma-separetad list of resource names
+\seq_new:N \g_loaded_resources_seq
+\seq_put_right:Nn \g_loaded_resources_seq { default }
+\cs_new:Npn \load_resources:n #1 {
+    \clist_clear_new:N \l_resource_name_clist
+    \clist_set:Nn \l_resource_name_clist { #1 }
+    \clist_map_inline:Nn \l_resource_name_clist {
+        \seq_if_in:NnTF \g_loaded_resources_seq { ##1 } { } {% else
+            \input{palettize-##1.tex}
+            \seq_put_right:Nn \g_loaded_resources_seq {##1}
+        }
+    }
+}
+\NewDocumentCommand{\PLTUseResource}{ >{ \TrimSpaces } m }{
+    \load_resources:n { #1 }
+}
+
+\ExplSyntaxOff
+
+% Default palette
+\PLTCreatePalette{default}
+\PLTSetPalette{default}{white}
+\PLTUsePalette{default}
+
+\PLTCreatePalette{default-itemizer}
+\PLTSetPalette{default-itemizer}{black on black}
+
