@@ -1,0 +1,45 @@
+%! Autor = Jander Moreira
+
+\RequirePackage{pgfopts}
+\RequirePackage{etoolbox}
+
+% Options
+\ifcsdef{plt@VariablesDeclared}{}{
+    \csdef{plt@VariablesDeclared}{}
+
+    \newbool{plt@LoadItemizer}
+    \newbool{plt@LoadBoxes}
+    \newbool{plt@LoadGetItems}
+
+    \newbool{plt@KeepEnumerate}
+    \newbool{plt@KeepItemize}
+    \newbool{plt@KeepDescription}
+}
+
+\pgfkeys{
+    /palettize/.cd,
+%
+% Packages
+    itemizer/.is if = plt@LoadItemizer,
+    boxes/.is if = plt@LoadBoxes,
+    getitems/.is if = plt@LoadGetItems,
+    all/.code = {
+        \booltrue{plt@LoadItemizer}
+        \booltrue{plt@LoadGetItems}
+    },
+%
+% Itemizer
+    keepenumerate/.is if = plt@KeepEnumerate,
+    keepitemize/.is if = plt@KeepItemize,
+    keepdescription/.is if = plt@KeepDescription,
+    keepall/.code = {
+        \booltrue{plt@KeepEnumerate}
+        \booltrue{plt@KeepItemize}
+        \booltrue{plt@KeepDescription}
+    },
+%
+% Otherwise
+    .unknown/.code = {\PackageError{palettize}{Unknown option: \pgfkeyscurrentname}},
+}
+
+\ProcessPgfOptions{palettize}

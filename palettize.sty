@@ -5,110 +5,12 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{palettize}[2024/07/24 v0.1 Add color palettes to documents.]
 
-\NewDocumentCommand{\PLTVersion}{}{v0.1}
+\NewDocumentCommand{\PLTVersion}{}{0.1}
 \NewDocumentCommand{\PLTDate}{}{2024/07/24}
 
+\input{palettize-options}
 
 \RequirePackage{palettize-base}
-
-% %% Code
-% \RequirePackage{etoolbox}
-%
-% \ExplSyntaxOn
-%
-% \cs_new:Npn \item_replacement:n #1 {
-%     \gather_item_parts:NNNNn \l_split_code_tl \l_in_angle_tl \l_in_bracket_tl \l_text_tl { #1 }
-%     \color{eeisavecolor}
-%     \ifbool{eei@AfterList}{
-%         \vspace{-\eei@VerticalSeparation}\par
-%         \par\boolfalse{eei@AfterList}
-%         % \item \tikz[overlay]\node[xshift = -0.7cm, yshift = 0.2em)]{\tiny(\the\eei@VerticalSeparation)};#1
-%         \setlength{\eei@VerticalSeparation}{0pt}
-%     }{}
-%     \str_if_eq:VnTF \l_split_code_tl { AB }{
-%         \visible<\l_in_angle_tl>{\item[\l_in_brackets_tl] \ShowText{\l_text_tl}}
-%     }{
-%         \str_if_eq:VnTF \l_split_code_tl { A }{
-%             \visible<\l_in_angle_tl>{\item \ShowText{\l_text_tl}}
-%         }{
-%             \str_if_eq:VnTF \l_split_code_tl { B }{
-%                 \item[\l_in_bracket_tl] \ShowText{\l_text_tl}
-%             }{
-%                 \item \ShowText{\l_text_tl}
-%             }
-%         }
-%     }
-% }
-% \NewDocumentCommand{\ItemReplacement}{ >{ \TrimSpaces } +m }{
-%     \item_replacement:n { #1 }
-% }
-%
-% % ShowText: shows the text part of the item
-% \NewDocumentCommand{\ShowText}{ +m }{
-%     \textcolor{\eei@ItemColor}{#1}
-% }
-%
-%
-% \ExplSyntaxOff
-%
-% \newcounter{eeiDepth}
-% \cslet{itemizeitemize}{\itemize}%
-% \cslet{enditemizeitemize}{\enditemize}%
-% \newbool{eei@AfterList}
-% \newlength{\eei@VerticalSeparation}
-% \RenewDocumentEnvironment{itemize}{ o +b }{%
-%     \ifnumequal{\theeeiDepth}{0}{%
-%         \colorlet{eeisavecolor}{.}%
-%         \setlength{\eei@VerticalSeparation}{0pt}%
-%     }{}%
-%     \stepcounter{eeiDepth}
-%     \begingroup%
-%     \GatherItems{#2}%
-%     \IfValueTF{#1}{%
-%         \itemizeitemize[#1]%
-%     }{%
-%         \itemizeitemize%
-%     }%
-%     \boolfalse{eei@AfterList}%
-%     \color{eeisavecolor}%
-%     \RunCommandOnItems{\ItemReplacement}%
-%     % \tikz[overlay]\node[xshift = -2cm, yshift = 0.2em)]{\tiny(A: \the\eei@VerticalSeparation)};%
-%     \enditemizeitemize%
-%     \endgroup%
-%     \global\addtolength{\eei@VerticalSeparation}{1\parsep}%
-%     \global\booltrue{eei@AfterList}%
-%     % \tikz[overlay]\node[xshift = -2cm, yshift = -0.5em)]{\tiny(D: \the\eei@VerticalSeparation)};%
-%     \addtocounter{eeiDepth}{-1}%
-%     }{}
-%
-%
-%
-% %\ifbool{boxing@UseEnumerate}{%
-% \cslet{enumerateenumerate}{\enumerate}%
-% \cslet{endenumerateenumerate}{\endenumerate}%
-% \RenewDocumentEnvironment{enumerate}{ o +b }{%
-%     \ifnumequal{\theeeiDepth}{0}{%
-%         \colorlet{eeisavecolor}{.}%
-%         \setlength{\eei@VerticalSeparation}{0pt}%
-%     }{}%
-%     \stepcounter{eeiDepth}
-%     \begingroup%
-%     \GatherItems{#2}%
-%     \IfValueTF{#1}{%
-%         \enumerateenumerate[#1]%
-%     }{%
-%         \enumerateenumerate%
-%     }%
-%     \boolfalse{eei@AfterList}%
-%     \color{eeisavecolor}%
-%     \RunCommandOnItems{\ItemReplacement}%
-%     % \tikz[overlay]\node[xshift = -2cm, yshift = 0.2em)]{\tiny(A: \the\eei@VerticalSeparation)};%
-%     \enditemizeitemize%
-%     \endgroup%
-%     \global\addtolength{\eei@VerticalSeparation}{1\parsep}%
-%     \global\booltrue{eei@AfterList}%
-%     % \tikz[overlay]\node[xshift = -2cm, yshift = -0.5em)]{\tiny(D: \the\eei@VerticalSeparation)};%
-%     \addtocounter{eeiDepth}{-1}%
-%     }{}%
-% % }{}
-%
+\ifbool{plt@LoadItemizer}{\RequirePackage{palettize-itemizer}}{}
+\ifbool{plt@LoadBoxes}{\RequirePackage{palettize-boxes}}{}
+\ifbool{plt@LoadGetItems}{\RequirePackage{palettize-getitems}}{}

@@ -172,7 +172,7 @@
 % #1: (optional) palette name
 \cs_new:Npn \step_palette:n #1 {
     % (\int_use:c { g_#1_current_int }~to~
-    \exp_args:Nno \int_gset:cn { g_#1_current_int } {
+    \exp_args:Nno \int_set:cn { g_#1_current_int } {
         \int_mod:nn { \int_use:c { g_#1_current_int } + 1 } {
             \seq_count:c { g_#1_colors_seq }
         }
@@ -225,9 +225,13 @@
     \clist_clear_new:N \l_resource_name_clist
     \clist_set:Nn \l_resource_name_clist { #1 }
     \clist_map_inline:Nn \l_resource_name_clist {
-        \seq_if_in:NnTF \g_loaded_resources_seq { ##1 } { } {% else
-            \input{palettize-##1.tex}
-            \seq_put_right:Nn \g_loaded_resources_seq {##1}
+            \seq_map_inline:Nn \g_loaded_resources_seq {\PackageWarning{plt}{##1}}
+        \str_if_empty:nTF { ##1 } { } {%else
+            \seq_if_in:NnTF \g_loaded_resources_seq { ##1 } { } {% else
+                \input{palettize-##1.tex}
+                \seq_gput_right:Nn \g_loaded_resources_seq {##1}
+                \PackageWarning{palettize}{Loading~##1}
+            }
         }
     }
 }
@@ -236,6 +240,14 @@
 }
 
 \ExplSyntaxOff
+
+
+\@ifclassloaded{beamer}{
+    \cslet{plt@Visible}\visible  % hijack beamer's \visible
+}{
+    \NewDocumentCommand{\plt@Visible}{ d<> }{}  % do nothing command
+}
+
 
 % Default palette
 \PLTCreatePalette{default}

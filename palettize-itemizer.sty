@@ -5,6 +5,8 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{palettize-itemizer}[2024/08/11 v0.1 Itemize and enumerate with colors.]
 
+\input{palettize-options}
+
 \RequirePackage{etoolbox}
 \RequirePackage{xcolor}
 \RequirePackage{palettize-base}
@@ -16,26 +18,25 @@
 
 \cs_new:Npn \item_replacement:n #1 {
     \gather_item_parts:NNNNn \l_split_code_tl \l_in_angle_tl \l_in_bracket_tl \l_text_tl { #1 }
-    % \color{eeisavecolor}
-    % \ifbool{eei@AfterList}{
-    %     \vspace{-\eei@VerticalSeparation}\par
-    %     \par\boolfalse{eei@AfterList}
-    %     % \item \tikz[overlay]\node[xshift = -0.7cm, yshift = 0.2em)]{\tiny(\the\eei@VerticalSeparation)};#1
-    %     \setlength{\eei@VerticalSeparation}{0pt}
-    % }{}
-    % \str_if_eq:VnTF \l_split_code_tl { AB }{
-    %     \visible<\l_in_angle_tl>{\item[\l_in_brackets_tl] \ShowText{\l_text_tl}}
-    % }{
-    %     \str_if_eq:VnTF \l_split_code_tl { A }{
-    %         \visible<\l_in_angle_tl>{\item \ShowText{\l_text_tl}}
-    %     }{
-    %         \str_if_eq:VnTF \l_split_code_tl { B }{
-    %             \item[\l_in_bracket_tl] \ShowText{\l_text_tl}
-    %         }{
-    \item \ShowText{\l_text_tl}
-    %         }
-    %     }
-    % }
+    \color{eeisavecolor}
+    \ifbool{eei@AfterList}{
+        \vspace{-\eei@VerticalSeparation}\par
+        \boolfalse{eei@AfterList}
+        \setlength{\eei@VerticalSeparation}{0pt}
+    }{}
+    \str_if_eq:VnTF \l_split_code_tl { AB }{
+        \plt@Visible<\l_in_angle_tl>{\item[\l_in_bracket_tl] \ShowText{\l_text_tl}}
+    }{
+        \str_if_eq:VnTF \l_split_code_tl { A }{
+            \plt@Visible<\l_in_angle_tl>{\item \ShowText{\l_text_tl}}
+        }{
+            \str_if_eq:VnTF \l_split_code_tl { B }{
+                \item[\l_in_bracket_tl] \ShowText{\l_text_tl}
+            }{
+                \item \ShowText{\l_text_tl}
+            }
+        }
+    }
 }
 \NewDocumentCommand{\ItemReplacement}{ >{ \TrimSpaces } +m }{
     \item_replacement:n { #1 }
@@ -54,70 +55,109 @@
 \ExplSyntaxOff
 
 
-\newcounter{eeiDepth}
-\cslet{itemizeitemize}{\itemize}%
-\cslet{enditemizeitemize}{\enditemize}%
-\newbool{eei@AfterList}
+% \RenewDocumentEnvironment{itemize}{ o +b }{%
+%     \ifnumequal{\theeeiDepth}{0}{%
+%         \colorlet{eeisavecolor}{.}%
+%         \setlength{\eei@VerticalSeparation}{0pt}%
+%     }{}%
+%     \stepcounter{eeiDepth}
+%     \begingroup%
+%     \GatherItems{#2}%
+%     \plt@IsDefaultPalette{%
+%         \PLTUsePalette{default-itemizer}
+%     }{}%
+%     \IfValueTF{#1}{%
+%         \itemizeitemize[#1]%
+%     }{%
+%         \itemizeitemize%
+%     }%
+%     \boolfalse{eei@AfterList}%
+%     \color{eeisavecolor}%
+%     \RunCommandOnItems{\ItemReplacement}%
+%     % \tikz[overlay]\node[xshift = -2cm, yshift = 0.2em)]{\tiny(A: \the\eei@VerticalSeparation)};%
+%     \enditemizeitemize%
+%     \endgroup%
+%     \global\addtolength{\eei@VerticalSeparation}{1\parsep}%
+%     \global\booltrue{eei@AfterList}%
+%     % \tikz[overlay]\node[xshift = -2cm, yshift = -0.5em)]{\tiny(D: \the\eei@VerticalSeparation)};%
+%     \addtocounter{eeiDepth}{-1}%
+%     }{%
+% }
+
 \newlength{\eei@VerticalSeparation}
-\RenewDocumentEnvironment{itemize}{ o +b }{%
+\newcounter{eeiDepth}
+\newbool{eei@AfterList}
+\NewDocumentEnvironment{plt@GenericList}{ m o +b }{%
     \ifnumequal{\theeeiDepth}{0}{%
         \colorlet{eeisavecolor}{.}%
         \setlength{\eei@VerticalSeparation}{0pt}%
     }{}%
     \stepcounter{eeiDepth}
     \begingroup%
-    \GatherItems{#2}%
-    \IfValueTF{#1}{%
-        \itemizeitemize[#1]%
-    }{%
-        \itemizeitemize%
-    }%
-    \boolfalse{eei@AfterList}%
-    \color{eeisavecolor}%
-    \RunCommandOnItems{\ItemReplacement}%
-    % \tikz[overlay]\node[xshift = -2cm, yshift = 0.2em)]{\tiny(A: \the\eei@VerticalSeparation)};%
-    \enditemizeitemize%
-    \endgroup%
-    \global\addtolength{\eei@VerticalSeparation}{1\parsep}%
-    \global\booltrue{eei@AfterList}%
-    % \tikz[overlay]\node[xshift = -2cm, yshift = -0.5em)]{\tiny(D: \the\eei@VerticalSeparation)};%
-    \addtocounter{eeiDepth}{-1}%
-    }{%
-}
-
-
-%\ifbool{boxing@UseEnumerate}{%
-\cslet{enumerateenumerate}{\enumerate}%
-\cslet{endenumerateenumerate}{\endenumerate}%
-\NewDocumentEnvironment{PLTEnumerate}{ o +b }{%
-    \ifnumequal{\theeeiDepth}{0}{%
-        \colorlet{eeisavecolor}{.}%
-        \setlength{\eei@VerticalSeparation}{0pt}%
-    }{}%
-    \stepcounter{eeiDepth}
-    \begingroup%
-    \PLTGatherItems{#2}%
     \plt@IsDefaultPalette{%
         \PLTUsePalette{default-itemizer}
     }{}%
-    \IfValueTF{#1}{%
-        \enumerateenumerate[#1]%
-    }{%
-        \enumerateenumerate%
-    }%
+    \PLTResetLoop
     \boolfalse{eei@AfterList}%
+    \PLTGatherItems{#3}%
+    % \PLTMapInline{\expandafter\detokenize\expandafter{\PLTInlineItem}\par}
+    \IfValueTF{#2}{%
+        \csuse{#1}[#2]%  \begin{}[]
+    }{%
+        \csuse{#1}%  \begin{}
+    }%
     \color{eeisavecolor}%
     \PLTMapCommand{\ItemReplacement}%
-    % \PLTMapCommand{\item}%
-    % \tikz[overlay]\node[xshift = -2cm, yshift = 0.2em)]{\tiny(A: \the\eei@VerticalSeparation)};%
-    \enditemizeitemize%
+    \csuse{end#1}% \end{}
     \endgroup%
     \global\addtolength{\eei@VerticalSeparation}{1\parsep}%
     \global\booltrue{eei@AfterList}%
-    % \tikz[overlay]\node[xshift = -2cm, yshift = -0.5em)]{\tiny(D: \the\eei@VerticalSeparation)};%
     \addtocounter{eeiDepth}{-1}%
     }{%
 }%
+
+% Set environment 'enumerate'
+\cslet{enumerateenumerate}{\enumerate}%
+\cslet{endenumerateenumerate}{\endenumerate}%
+\NewDocumentEnvironment{PLTEnumerate}{ o }{%
+    \plt@GenericList{enumerateenumerate}[#1]
+    }{%
+    \endplt@GenericList%
+}
+\ifbool{plt@KeepEnumerate}{}{
+    \cslet{enumerate}\PLTEnumerate
+    \cslet{endenumerate}\PLTEndEnumerate
+    \PackageWarning{palettize}{'enumerate' replaced.}
+}
+
+% Set environment 'itemize'
+\cslet{itemizeitemize}{\itemize}%
+\cslet{enditemizeitemize}{\enditemize}%
+\NewDocumentEnvironment{PLTItemize}{ o }{%
+    \plt@GenericList{itemizeitemize}[#1]
+    }{%
+    \endplt@GenericList%
+}
+\ifbool{plt@KeepItemize}{}{
+    \cslet{itemize}\PLTItemize
+    \cslet{enditemize}\PLTEndItemize
+    \PackageWarning{palettize}{'itemize' replaced.}
+}
+
+% Set environment 'description'
+\cslet{descriptiondescription}{\description}%
+\cslet{enddescriptiondescription}{\enddescription}%
+\NewDocumentEnvironment{PLTDescription}{ o }{%
+    \plt@GenericList{descriptiondescription}[#1]
+    }{%
+    \endplt@GenericList%
+}
+\ifbool{plt@KeepDescription}{}{
+    \cslet{description}\PLTDescription
+    \cslet{enddescription}\PLTEndDescription
+    \PackageWarning{palettize}{'description' replaced.}
+}
+
 
 \endinput
 

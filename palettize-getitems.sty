@@ -31,48 +31,48 @@
 \ExplSyntaxOn
 \cs_new:Npn \gather_item_parts:NNNNn #1#2#3#4#5 {
     % Clear all output macros
-    \tl_clear_new:N \l_code_tl
-    \tl_clear_new:N \l_in_angle_tl
-    \tl_clear_new:N \l_in_brackets_tl
-    \tl_clear_new:N \l_body_tl
+    \tl_clear_new:N #1
+    \tl_clear_new:N #2
+    \tl_clear_new:N #3
+    \tl_clear_new:N #4
 
     % Check for [] and <> options
     \regex_extract_once:nnNTF { \A\s*<(.*?)>\s*\[(.*?)\]\s*(.*) } { #5 } \g_item_structure_seq { % <> and []
-        \tl_set:Nn \l_code_tl { AB }
-        \tl_set:Nn \l_in_angle_tl { \seq_item:Nn \g_item_structure_seq { 2 } }
-        \tl_set:Nn \l_in_brackets_tl { \seq_item:Nn \g_item_structure_seq { 3 } }
-        \tl_set:Nn \l_body_tl { \seq_item:Nn \g_item_structure_seq { 4 } }
+        \tl_set:Nn #1 { AB }
+        \tl_set:Nn #2 { \seq_item:Nn \g_item_structure_seq { 2 } }
+        \tl_set:Nn #3 { \seq_item:Nn \g_item_structure_seq { 3 } }
+        \tl_set:Nn #4 { \seq_item:Nn \g_item_structure_seq { 4 } }
     } {
         \regex_extract_once:nnNTF { \A\s*\[(.*?)\]\s*<(.*?)>\s*(.*) } { #5 } \g_item_structure_seq { % [] and <>
-            \tl_set:Nn \l_code_tl { AB }
-            \tl_set:Nn \l_in_angle_tl { \seq_item:Nn \g_item_structure_seq { 3 } }
-            \tl_set:Nn \l_in_brackets_tl { \seq_item:Nn \g_item_structure_seq { 2 } }
-            \tl_set:Nn \l_body_tl { \seq_item:Nn \g_item_structure_seq { 4 } }
+            \tl_set:Nn #1 { AB }
+            \tl_set:Nn #2 { \seq_item:Nn \g_item_structure_seq { 3 } }
+            \tl_set:Nn #3 { \seq_item:Nn \g_item_structure_seq { 2 } }
+            \tl_set:Nn #4 { \seq_item:Nn \g_item_structure_seq { 4 } }
         } {
             \regex_extract_once:nnNTF { \A\s*<(.*?)>\s*(.*) } { #5 } \g_item_structure_seq { % only <>
-                \tl_set:Nn \l_code_tl { A }
-                \tl_set:Nn \l_in_angle_tl { \seq_item:Nn \g_item_structure_seq { 2 } }
-                \tl_set:Nn \l_body_tl { \seq_item:Nn \g_item_structure_seq { 3 } }
+                \tl_set:Nn #1 { A }
+                \tl_set:Nn #2 { \seq_item:Nn \g_item_structure_seq { 2 } }
+                \tl_set:Nn #4 { \seq_item:Nn \g_item_structure_seq { 3 } }
             } {
                 \regex_extract_once:nnNTF { \A\s*\[(.*?)\]\s*(.*) } { #5 } \g_item_structure_seq { % only []
-                    \tl_set:Nn \l_code_tl { B }
-                    \tl_set:No \l_in_brackets_tl { \seq_item:Nn \g_item_structure_seq { 2 } }
-                    \tl_set:No \l_body_tl { \seq_item:Nn \g_item_structure_seq { 3 } }
+                    \tl_set:Nn #1 { B }
+                    \tl_set:No #3 { \seq_item:Nn \g_item_structure_seq { 2 } }
+                    \tl_set:No #4 { \seq_item:Nn \g_item_structure_seq { 3 } }
                 } { % only text
-                    \tl_set:Nn \l_code_tl { N }
-                    \tl_set:Nn \l_body_tl { #5 }
+                    \tl_set:Nn #1 { N }
+                    \tl_set:Nn #4 { #5 }
                 }
             }
         }
     }
-    \tl_clear_new:N #1
-    \exp_args:NNx \tl_set:Nn #1 { \tl_use:N \l_code_tl }
-    \tl_clear_new:N #2
-    \exp_args:NNf \tl_set:Nn #2 { \tl_use:N \l_in_angle_tl }
-    \tl_clear_new:N #3
-    \exp_args:NNf \tl_set:Nn #3 { \tl_use:N \l_in_brackets_tl }
-    \tl_clear_new:N #4
-    \exp_args:NNf \tl_set:Nn #4 { \tl_use:N \l_body_tl }
+    % \tl_clear_new:N #1
+    % \exp_args:NNx \tl_set:Nn #1 { \tl_use:N #1 }
+    % \tl_clear_new:N #2
+    % \exp_args:NNf \tl_set:Nn #2 { \tl_use:N #2 }
+    % \tl_clear_new:N #3
+    % \exp_args:NNf \tl_set:Nn #3 { \tl_use:N #3 }
+    % \tl_clear_new:N #4
+    % \exp_args:NNf \tl_set:Nn #4 { \tl_use:N #4 }
 }
 \cs_generate_variant:Nn \gather_item_parts:NNNNn { NNNNV }
 \NewDocumentCommand{\PLTParseItem}{ m m m m +m }{
@@ -112,7 +112,7 @@
     \tl_set:Nn \l_input_tl { #2 }
     \tl_replace_all:Nnn \l_input_tl { ~ } { \c_space_tl }  % preserve spaces in input
 
-% Process token by token
+    % Process token by token
     \int_zero_new:N \l_level_int
     \tl_clear_new:N \l_begin_tl
     \tl_set:Nn \l_begin_tl { \begin }
@@ -160,15 +160,15 @@
 %   \g_eei_header_tl: text before first \item
 %   \g_eei_items_seq: list with each \item text
 \cs_new:Npn \gather_items:n #1 {
-% Mark nested enviroments \item tokens
+    % Mark nested enviroments \item tokens
     \mark_nested_items:Nn \l_filtered_tl { #1 }
-% Split items
+    % Split items
     \seq_clear_new:N \g_eei_marked_items_seq
     \seq_set_split:NnV \g_eei_marked_items_seq { \item } \l_filtered_tl
-% Get header
+    % Get header
     \tl_clear_new:N \g_eei_header_tl
     \seq_pop_left:NN \g_eei_marked_items_seq \g_eei_header_tl
-% Unmark previously marked \items
+    % Unmark previously marked \items
     \seq_clear_new:N \g_eei_items_seq
     \tl_clear_new:N \l_item_tl
     \seq_map_inline:Nn \g_eei_marked_items_seq {
@@ -196,7 +196,7 @@
 %   to each item; header is ignored
 % #1: code
 \cs_new:Npn \map_inline:N #1 {
-        \tl_clear_new:N \PLTInlineItem
+    \tl_clear_new:N \PLTInlineItem
     \seq_map_inline:Nn \g_eei_items_seq {
         \tl_set:Nn \PLTInlineItem { ##1 }
         #1
