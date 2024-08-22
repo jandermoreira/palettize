@@ -16,12 +16,7 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
-\usepackage[
-    itemizer, keepall,
-    boxes
-]{palettize}
-
-\PLTUseResource{toasted-peach, midnight-waters, sliced-citrus}
+\usepackage[all, all-palettes]{palettize}
 
 
 %% Layout
@@ -147,7 +142,7 @@
     \index{#1@\texttt{\textbackslash#1}}%
     \refstepcounter{MacroCounter}%
     \label{macro:#1}%
-    %! parser = off
+%! parser = off
     \IfValueTF{#3}{%
         \begin{macro*}{#1}{#2}
     }{%
@@ -155,7 +150,7 @@
     }
     %! parser = on
         }{%
-    %! parser = off
+%! parser = off
     \end{macro*}
     %! parser = on
     %! formatter = on
@@ -216,7 +211,6 @@
 }
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{%
@@ -254,19 +248,17 @@ This package was first released as v0.1%
 
 
 \section{Package usage and options}\label{sec:package-usage-and-options}
-This package depends on the following packages:
+This package is a collection of modules that can be loaded as options passed to the package \PackageName{palettize} or as standalone packages. It depends on the following packages:
 
 \begin{center}
     \begin{tabular}{ll}
-        \PackageName{etoolbox} & (\url{https://ctan.org/pkg/etoolbox}) \\
-        \PackageName{xcolor}   & (\url{https://ctan.org/pkg/xcolor})   \\
+        \PackageName{etoolbox}  & (\url{https://ctan.org/pkg/etoolbox})  \\
+        \PackageName{tcolorbox} & (\url{https://ctan.org/pkg/tcolorbox}) \\
+        \PackageName{xcolor}    & (\url{https://ctan.org/pkg/xcolor})    \\
     \end{tabular}
 \end{center}
 
-\medskip
-To use the package, simply request its use in the preamble of the document.
-
-\begin{macro*}{usepackage}{\OArg{package options list}}[palettize]
+\begin{macro*}{usepackage}{\OArg{options list}}[palettize]
     The basic usage is as follows.
 
     \begin{latexcode}
@@ -276,41 +268,65 @@ To use the package, simply request its use in the preamble of the document.
     This will load several macros to handle color palettes, as described in \cref{sec:palettes}.
 
     \bigskip
-    Currently, the list of package options includes the following.
+    Package \PackageName{palettize}'s specific options are:
+
+    \begin{option}{all-palettes}{}
+        With \Option{all-palettes}, all pre-defined palettes are loaded and made available for use. The shipped palettes are presented in \Cref{sec:available-palettes}.
+    \end{option}
+
+    \bigskip
+    To load modules, the following options can be passed:
+
+    \begin{option}{boxes}{}
+        The module \Option{boxes} provides an easy way to transform a list of \Macro{items} in a colorful matrix of boxes.
+
+        This module can also be loaded with:
+        \begin{latexcode}
+            \usepackage{palettize-boxes}
+        \end{latexcode}
+
+        Details in \Cref{sec:boxes}.
+    \end{option}
+
+    \begin{option}{itemizer}{}
+        This option enhances environments such as \latexinline{enumerate}, \latexinline{itemize}, and \latexinline{description} to use color palettes.
+
+        This module can also be loaded with:
+        \begin{latexcode}
+            \usepackage{palettize-itemizer}
+        \end{latexcode}
+
+        Details in \Cref{sec:itemizer}.
+    \end{option}
 
     \begin{option}{getitems}{}
-        This option provides support for processing lists of items using the \latexinline{\item} macro as an itemizer. In practice, it provides macros for manipulating lists for other `palettize` resources, but can be used independently.
+        This option provides direct support to processing lists of items using the macro \latexinline{\item} as the itemizer. In practice, it provides macros for manipulating lists for other `palettize` resources, but can be used independently. \PackageName{palettize-getitems} is a ``core'' module used by \PackageName{palettize-boxes} and \PackageName{palettize-itemizer} and is available as a bonus feature.
 
-        It can also be included by \latexinline{\usepacakge{palettize-getitems}}.
+        This module can also be loaded with:
+        \begin{latexcode}
+            \usepackage{palettize-getitems}
+        \end{latexcode}
 
-        Detailed use of this resource is in \Cref{sec:getitems}
+        Details in \Cref{sec:getitems}.
     \end{option}
+
+    Each module may have its own set of options, which are describe in their respective sections. All the module-specific options can also be passed directely to \PackageName{palettize} and if its respective module is not loaded, they are simply ignored.
 \end{macro*}
 
 
-\section{Resources}
+\section{The palettes of \PackageName{palettize}}\label{sec:palettes}
 
-\subsection{Palettes}\label{sec:palettes}
+The package \PackageName{palettize} sees palettes as lists of background colors. Each color can be be a single background color as those defined using \PackageName{xcolor} or a foreground/background pair. A color pair is written \Argument{fg~color}~\latexinline{on}~\Argument{bg~color}, such as \latexinline{white on blue}. When just a single color is used in a palette, then the foreground color is the current document's color. For example, \latexinline{green} means \latexinline{. on green}\footnote{The ``dot'' color (\latexinline{.}) is the current color in package \PackageName{xcolor}.}.
 
-This packages sees palettes as lists of background colors. Each color can be be a single background color as those defined using \PackageName{xcolor} or a foreground/background pair. A color pair is written \Argument{fg~color}~\latexinline{on}~\Argument{bg~color}, such as \latexinline{white on blue}. When just a single color is used in a palette, then the foreground color is the current document's color. For example, \latexinline{green} means \latexinline{. on green}.
-
-A palette is created with \MacroRef{PLTCreatePalette}. As several different patterns can be created, the concept of current palette is used. To change the current palette, \MacroRef{PLTUsePalette} must be used.
-
-A palette called \latexinline{default} is the initial current palette and it has just one color: \latexinline{. on white}. It is defined as follows and assumes ``current text color on a white background''.
-
-\begin{latexcode}
-    \PLTCreatePalette{default}
-    \PLTSetPalette{default}{white}
-    \PLTUsePalette{default}
-\end{latexcode}
+A palette is created with \MacroRef{PLTCreatePalette}. As several different patterns can be created, the concept of current palette is used. To change the current palette, \MacroRef{PLTUsePalette} must be used. There is a default palette (see~\Cref{sec:available-palettes})
 
 Most of the macros will use the current palette, unless otherwise stated.
 
 \begin{macro}{PLTCreatePalette}[\MArg{palette~name}]
-    \Macro{PLTCreatePalette} creates a new, empty palette called \Argument{palette~name} and inserts its name in list of defined palettes.
+    \Macro{PLTCreatePalette} creates a new, empty palette called \Argument{palette~name} and inserts its name in list of defined palettes. Trying to create a palette with an existing name results in error.
 \end{macro}
 
-\begin{macro}{PLTSetPalette}[\MArg{list~of~colors}]
+\begin{macro}{PLTSetPalette}[\OArg{palette~name}\MArg{list~of~colors}]
     The \Argument{list~of~colors} is comma-separated list of colors (single or in pairs) to be assigned to \Argument{pallete~name}.
 \end{macro}
 
@@ -324,13 +340,13 @@ Most of the macros will use the current palette, unless otherwise stated.
     }
 \end{tcblisting}
 
-A new current palette can be defined with \MacroRef{PLTUsePalette}.
+The current palette can be set with \MacroRef{PLTUsePalette}.
 
 \begin{macro}{PLTUsePalette}[\MArg{palette~name}]
-    This macro makes \Argument{palette~name} the current palette.
+    This macro makes \Argument{palette~name} the current palette, so defining which palette macros such as \MacroRef{PLTUseCurrentColor} and \MacroRef{PLTNextColor}, for example, will work with.
 \end{macro}
 
-A palette is an ordered list of color and after set, the first color is the current color of the palette. The \PackageName{xcolor}'s color \latexinline{PLTBGColor} and \latexinline{PLTFGColor} hold the current color.
+A palette set with \MacroRef{PLTSetPalette} is an ordered list of color and after set, its first color is the current color of the palette. The \PackageName{xcolor}'s colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} hold the current color.
 
 \begin{tcblisting}{}
     \PLTCreatePalette{my colors}
@@ -346,6 +362,21 @@ A palette is an ordered list of color and after set, the first color is the curr
     \PLTNextColor
     And \colorbox{PLTBGColor}{\textcolor{PLTFGColor}{this}} is the last one.
 \end{tcblisting}
+
+
+To change the current color, \MacroRef{PLTNextColor} will step to the next color, and \MacroRef{PLTResetLoop} will set the current color back to the first one.
+
+\begin{macro}{PLTNextColor}[\OArg{palette~name}]
+    \Macro{PLTNextColor} changes the current color to the next in the sequence in an endless loop.
+
+    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
+\end{macro}
+
+\begin{macro}{PLTResetLoop}[\OArg{palette~name}]
+    Set the first color of the palette as the current color.
+
+    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
+\end{macro}
 
 \begin{tcblisting}{}
     % \usepackage{etoolbox}
@@ -367,21 +398,7 @@ A palette is an ordered list of color and after set, the first color is the curr
 \end{tcblisting}
 
 
-To change the current color, \MacroRef{PLTNextColor} will step to the next color, and \MacroRef{PLTResetLoop} will set the current color back to the first one.
-
-\begin{macro}{PLTNextColor}[\OArg{palette~name}]
-    \Macro{PLTNextColor} changes the current color to the next in the sequence in an endless loop.
-
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
-\end{macro}
-
-\begin{macro}{PLTResetLoop}[\OArg{palette~name}]
-    Set the first color of the palette as the current color.
-
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
-\end{macro}
-
-The current color always sets \latexinline{PLTBGColor} and \latexinline{PLTFGColor} and their names are available through \MacroRef{PLTBGColorName} and \MacroRef{PLTFGColorName} respectively.
+As already described, the current color always sets \latexinline{PLTBGColor} and \latexinline{PLTFGColor}. Their names are available through \MacroRef{PLTBGColorName} and \MacroRef{PLTFGColorName} respectively.
 
 \begin{macro}{PTLBGColorName}[\OArg{pattern~name}]
     \Macro{PTLBGColorName} expands to the current background color name of the current pattern.
@@ -402,26 +419,116 @@ The current color always sets \latexinline{PLTBGColor} and \latexinline{PLTFGCol
     \PLTSetPalette{rainbow}{red, orange, yellow, green, blue, indigo, violet}
     \PLTUsePalette{rainbow}
 
-    \forcsvlist{%
-        \textcolor{PLTBGColor}{\textbf{\PLTBGColorName}}, %
-        \PLTNextColor%
-    }{{}, {}, {}, {}, {}, {}}%
-    and \textcolor{PLTBGColor}{\textbf{\PLTBGColorName}}.
+    \begin{center}
+        \forcsvlist{%
+            \textcolor{PLTBGColor}{\textbf{\PLTBGColorName}}, %
+            \PLTNextColor%
+        }{{}, {}, {}, {}, {}, {}}%
+        and \textcolor{PLTBGColor}{\textbf{\PLTBGColorName}}.
 
-    \medskip
-    \PLTResetLoop
-    \forcsvlist{%
-        \textcolor{PLTBGColor}{\rule{1cm}{1em}}%
-        \PLTNextColor%
-    }{{}, {}, {}, {}, {}, {}, {}}%
+        \medskip
+        \PLTResetLoop
+        \forcsvlist{%
+            \textcolor{PLTBGColor}{\rule{1.15cm}{1em}}%
+            \PLTNextColor%
+        }{{}, {}, {}, {}, {}, {}, {}}%
+    \end{center}
 \end{tcblisting}
 
-A list of the palettes shipped with this package is presented in \Cref{sec:available-palettes}.
+\subsection{Available palettes}\label{sec:available-palettes}
 
-\subsection{Boxes}\label{sec:boxing}
+Some palettes are shipped with this package and can be loaded with \MacroRef{PLTUseResource}.
+
+\begin{macro}{PLTUseResource}[\MArg{list~of~resources}]
+    The \Argument{list~of~resources} is a comma-separated list of resources that can be loaded. This macro can allows to use pre-existing palettes, which are stored in files named \texttt{palettize-\Argument{resource~name}.tex}.
+\end{macro}
+
+\begin{latexcode}
+    \PLTUseResource{sliced-citrus, toasted-peach}
+\end{latexcode}
+
+\subsubsection*{The default palette}
+
+A palette called \latexinline{nightfall-ambiance} is always loaded and it is used as the default palette by all modules.
+
+\begin{tcolorbox}[width = 0.5\linewidth]
+    \textbf{Palette nightfall-ambiance}\medskip\par
+    \PLTLoopPalette{nightfall-ambiance}{%
+        \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName };
+    }\par
+\end{tcolorbox}%
+
+
+\subsubsection*{List of palettes}
+
+The following palettes are available.
+
+\begin{multicols}{2}
+    \PLTLoopPaletteList{
+        \expandafter\ifstrequal\expandafter{\PLTCurrentPalette}{nightfall-ambiance}{}{%
+            \par
+            \begin{tcolorbox}
+                \textbf{Palette \PLTCurrentPalette}\medskip\par
+                \latexinline{\PLTUseResource}\texttt{\{\PLTCurrentPalette\}}\strut\bigskip\par
+                \PLTLoopPalette{\PLTCurrentPalette}{%
+                    \PLTUsePalette{\PLTCurrentPalette}
+                    \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor,
+                        font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName\strut};%
+                    \par%
+                }
+            \end{tcolorbox}%
+        }%
+    }
+\end{multicols}
+
+The palette \latexinline{default} can also be used, but is not loadable.
+
+\subsection{Palettes are local!}
+
+If a palette is used or created in a local scope\todo{Escrever!}
+
+\subsection{Looping through palettes and colors}
+
+A simple mechanism is provided to access the list of palettes and the colors inside each one.
+
+\begin{macro}{PLTLoopPaletteList}[\MArg{code}]
+    This macro executes \Argument{code} for each existing palette. In each iteration \MacroDef{PLTCurrentPalette} is set to the palette's name, but the palette is not set as default with \MacroRef{PLTUsePalette}.
+\end{macro}
+
+\begin{tcblisting}{}
+    Palletes:
+
+    \begin{enumerateenumerate}
+        \PLTLoopPaletteList{\item \PLTCurrentPalette}
+    \end{enumerateenumerate}
+\end{tcblisting}
+
+\begin{macro}{PLTLoopPalette}[\MArg{palette name}\MArg{code}]
+    This provides an iteration through all colors in \Argument{palette name} executing \Argument{code}. The colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} are set properly in each interaction. \MacroRef{PLTBGColorName} and \Macro{PLTFGColorName} are also available.
+\end{macro}
+
+\begin{tcblisting}{}
+    % \usepackage{tikz}
+    \PLTCreatePalette{new example}
+    \PLTSetPalette{new example}{
+        red!50!black on orange!50,
+        green!50!black on green!40!black!50,
+        blue!60 on blue!50!black
+    }
+    \PLTLoopPalette{new example}{%
+        \tikz\path[draw = PLTFGColor, fill = PLTBGColor, ultra thick] (0, 0) circle (5pt);\quad%
+    }
+\end{tcblisting}
+
+\section{Modules}
+
+This sections describes the modules in detail.
+
+\subsection{Boxes}\label{sec:boxes}
 
 \begin{tcblisting}{}
     \begin{PLTBoxItemize}
+        <raster columns = 2>
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
@@ -476,50 +583,155 @@ A list of the palettes shipped with this package is presented in \Cref{sec:avail
     \end{tcolorbox}
 \end{tcblisting}
 
-\subsection{Lists}\label{sec:enumitem}
+\subsection{Lists}\label{sec:itemizer}
 
-\begin{PLTEnumerate}
-    \item Software: Computer programs that instruct the execution of a computer.
-    \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-    \begin{PLTEnumerate}
+The module \PackageName{palettize-itemizer} adds color palettes to lists. Currently, the environments \latexinline{enumerate}, \latexinline{itemize}, and \latexinline{description} are affected. The default palette is applied to these environments (see \Cref{sec:available-palettes}).
+
+\begin{macro*}{usepackage}{\OArg{options list}}[palettize-itemizer]
+    Package options include the following:
+
+    \begin{option}{keep-enumerate}{}
+        When specified, \Option{keep-enumerate} preserves the original \latexinline{enumerate} environment untouched.
+    \end{option}
+
+    \begin{option}{keep-itemize}{}
+        When specified, \Option{keep-itemize} preserves the original \latexinline{itemize} environment untouched.
+    \end{option}
+
+    \begin{option}{keep-description}{}
+        When specified, \Option{keep-description} preserves the original \latexinline{description} environment untouched.
+    \end{option}
+
+    \begin{option}{keep-all}{}
+        This is the same as using \Option{keep-enumerate}, \Option{keep-itemize}, and \Option{keep-description} toghether.
+    \end{option}
+
+    All of these options can be specified also when using \latexinline{\usepackage{palettize}}. For example:
+
+    \begin{latexcode}
+        \usepackage[itemizer, keep-description]{palettize}
+    \end{latexcode}
+\end{macro*}
+
+The modified lists are exemplified below.
+
+\begin{tcblisting}{}
+    \begin{itemize}
         \item Software: Computer programs that instruct the execution of a computer.
         \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+        \item Firmware: Software that provides low-level control of computing device hardware.
+        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{itemize}
+\end{tcblisting}
+
+\begin{tcblisting}{}
+    \begin{enumerate}
+        \item Software: Computer programs that instruct the execution of a computer.
+        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+        \item Firmware: Software that provides low-level control of computing device hardware.
+        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{enumerate}
+\end{tcblisting}
+
+\begin{tcblisting}{}
+    \begin{tabular}{p{0.45\linewidth}p{0.45\linewidth}}
+        \begin{description}
+            \item[Software] Computer programs that instruct the execution of a computer.
+            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+            \item[Firmware] Software that provides low-level control of computing device hardware.
+            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+        \end{description}
+        &
+        \PLTUseResource{sliced-citrus}
+        \PLTUsePalette{sliced-citrus}
+        \begin{description}
+            \item[Software] Computer programs that instruct the execution of a computer.
+            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+            \item[Firmware] Software that provides low-level control of computing device hardware.
+            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+        \end{description}
+    \end{tabular}
+\end{tcblisting}
+
+\subsubsection{New environments for lists}
+
+Three new environments were created to handle palette-aware lists: \latexinline{PLTEnumerate}, \latexinline{PLTItemize}, and \latexinline{PLTDescription}. These are used to replace their respective counterparts. Yet, they can be used directly.
+
+\begin{center}
+    \begin{tabular}{ll}
+        \textbf{Environment}      & \textbf{Replacement environment} \\
+        \hline
+        \latexinline{enumerate}   & \latexinline{PLTEnumerate}       \\
+        \latexinline{itemize}     & \latexinline{PLTItemize}         \\
+        \latexinline{description} & \latexinline{PLTDescription}     \\
+        \hline
+    \end{tabular}
+\end{center}
+
+When the option \OptionRef{keep-all} is used, all colored environments are available using these alternatives.
+
+\begin{tcblisting}{}
+    \begin{PLTEnumerate}
+        \item One
+        \item Two
+        \item Three
     \end{PLTEnumerate}
-    \item [*]Firmware: Software that provides low-level control of computing device hardware.
-    \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
-\end{PLTEnumerate}
+
+    \medskip
+    \begin{PLTItemize}
+        \item One
+        \item Two
+        \item Three
+    \end{PLTItemize}
+
+    \medskip
+    \begin{PLTDescription}
+        \item [One] First.
+        \item [Two] Second.
+        \item [Three] Third.
+    \end{PLTDescription}
+\end{tcblisting}
+
+\subsubsection{Accessing the original list environments}
+
+If a list environment was not preserved by any of the \Option{keep-\Argument{list name}} options it can still be used with the renamed environments below.
+
+\begin{center}
+    \begin{tabular}{ll}
+        \textbf{Environment}      & \textbf{Renamed environment}         \\
+        \hline
+        \latexinline{enumerate}   & \latexinline{enumerateenumerate}     \\
+        \latexinline{itemize}     & \latexinline{itemizeitemize}         \\
+        \latexinline{description} & \latexinline{descriptiondescription} \\
+        \hline
+    \end{tabular}
+\end{center}
 
 \bigskip
+\begin{tcblisting}{}
+    This is an original unnumbered list:
 
-\PLTCreatePalette{rgb}
-\PLTSetPalette{rgb}{red, green, blue}
-\PLTUsePalette{rgb}
-\begin{PLTEnumerate}
-    \item Software: Computer programs that instruct the execution of a computer.
-    \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-    \begin{PLTEnumerate}
+    \begin{itemizeitemize}
         \item Software: Computer programs that instruct the execution of a computer.
         \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item Blue
-    \end{PLTEnumerate}
-    \item Firmware: Software that provides low-level control of computing device hardware.
-    % \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
-\end{PLTEnumerate}
+        \item Firmware: Software that provides low-level control of computing device hardware.
+        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{itemizeitemize}
+\end{tcblisting}
 
+\subsection{Compatibility with other packages}
 
-\begin{enumerate}
-    \item Um
-    \item Dois
-    \item Trës!
-\end{enumerate}
+The module \PackageName{palettize-itemizer} seem to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testes were carried out.
 
 
 \section{Known issues and limitations}\label{sec:known-issues-and-limitations}
 
-\begin{descriptiondescription}
-    \item[\PackageName{pgffor}] current color is local and \latexinline{\foreach} will not work.
-    \item[] Foreground color changes inside boxes using \Macro{color} or \Macro{textcolor} are bounded by the limitations described in the documentation of \PackageName{xcolor} (Section~2.6.4, \PackageName{xcolor} v2.14, 2022/06/12).
-\end{descriptiondescription}
+\begin{center}
+    \begin{descriptiondescription}
+        \item[\PackageName{pgffor}] current color is local and \latexinline{\foreach} will not work.
+        \item[] Foreground color changes inside boxes using \Macro{color} or \Macro{textcolor} are bounded by the limitations described in the documentation of \PackageName{xcolor} (Section~2.6.4, \PackageName{xcolor} v2.14, 2022/06/12).
+    \end{descriptiondescription}
+\end{center}
 
 \clearpage
 \appendix
@@ -598,30 +810,28 @@ These are tools for processing lists with \Macro{item} as itemizer.
 
 \begin{macro}{PLTParseItem}[\MArg{type~macro}\MArg{angle~macro}\MArg{brackets-macro}\MArg{text~macro}\MArg{text}]
     This macro parses \Argument{text} looking for leading options using both angle or square brackets. The results are:
-    \begin{itemize}
+    \begin{itemizeitemize}
         \item \Argument{type~macro} is set to
-        \begin{itemize}
+        \begin{itemizeitemize}
             \item \latexinline{A} if only angle brackets are present;
             \item \latexinline{B} if only (square) brackets are present;
             \item \latexinline{AB} if both angle and square brackets are present, in any order;
             \item \latexinline{N} otherwise;
-        \end{itemize}
+        \end{itemizeitemize}
         \item \Argument{angle~macro} is set to the content between angle brackets;
         \item \Argument{brackets~macro} is set to the content between brackets;
         \item \Argument{text~macro} is set to the remaining content.
-    \end{itemize}
+    \end{itemizeitemize}
 \end{macro}
 
 \begin{tcblisting}{}
     \PLTParseItem{\opttype}{\angleopts}{\bracketopts}{\body}{%
         [font=sffamily]<*>Some \textit{text}%
     }
-    \begin{itemize}
-        \item Code: \texttt{\opttype}
-        \item In angle brackets: \texttt{\angleopts}
-        \item In brackets: \texttt{\bracketopts}
-        \item Text: \texttt{\body}
-    \end{itemize}
+    \noindent Code: \texttt{\opttype}\par
+    In angle brackets: \texttt{\angleopts}\par
+    In brackets: \texttt{\bracketopts}\par
+    Text: \texttt{\body}\par
 \end{tcblisting}
 
 %! formatter = off
@@ -663,27 +873,6 @@ These are tools for processing lists with \Macro{item} as itemizer.
 \end{tcblisting}
 %! formatter = on
 
-
-\section{Available palettes}\label{sec:available-palettes}
-
-The following palettes are available and can be used by calling \Macro{PLTUseResource}.
-
-\begin{multicols}{2}
-    \PLTLoopPaletteList{
-        \expandafter\ifstrequal\expandafter{\PLTCurrentPalette}{default}{}{%
-            \begin{tcolorbox}
-                \subsection*{Palette \PLTCurrentPalette}
-                \latexinline{\PLTUseResource}\texttt{\{\PLTCurrentPalette\}}\par
-                \PLTLoopPalette{\PLTCurrentPalette}{%
-                    \PLTUsePalette{\PLTCurrentPalette}
-                    \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName };
-                }\par
-            \end{tcolorbox}%
-        }%
-    }
-\end{multicols}
-
-The palette \latexinline{default} can also be used, but is not loadable.
 
 %% Index
 \printindex

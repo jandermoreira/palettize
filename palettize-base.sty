@@ -225,7 +225,7 @@
     \clist_clear_new:N \l_resource_name_clist
     \clist_set:Nn \l_resource_name_clist { #1 }
     \clist_map_inline:Nn \l_resource_name_clist {
-            \seq_map_inline:Nn \g_loaded_resources_seq {\PackageWarning{plt}{##1}}
+        \seq_map_inline:Nn \g_loaded_resources_seq {\PackageWarning{plt}{##1}}
         \str_if_empty:nTF { ##1 } { } {%else
             \seq_if_in:NnTF \g_loaded_resources_seq { ##1 } { } {% else
                 \input{palettize-##1.tex}
@@ -250,10 +250,15 @@
 
 
 % Default palette
-\PLTCreatePalette{default}
-\PLTSetPalette{default}{white}
-\PLTUsePalette{default}
-
-\PLTCreatePalette{default-itemizer}
-\PLTSetPalette{default-itemizer}{black on black}
-
+\ifbool{plt@LoadAllPalettes}{
+    \PLTUseResource{
+        nightfall-ambiance,
+        sliced-citrus,
+        toasted-peach,
+        midnight-waters,
+        sting-has-sprung,
+    }
+}{
+    \PLTUseResource{nightfall-ambiance}
+}
+\PLTUsePalette{nightfall-ambiance}

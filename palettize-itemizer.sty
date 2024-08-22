@@ -126,7 +126,7 @@
 }
 \ifbool{plt@KeepEnumerate}{}{
     \cslet{enumerate}\PLTEnumerate
-    \cslet{endenumerate}\PLTEndEnumerate
+    \cslet{endenumerate}\endPLTEnumerate
     \PackageWarning{palettize}{'enumerate' replaced.}
 }
 
@@ -140,7 +140,7 @@
 }
 \ifbool{plt@KeepItemize}{}{
     \cslet{itemize}\PLTItemize
-    \cslet{enditemize}\PLTEndItemize
+    \cslet{enditemize}\endPLTItemize
     \PackageWarning{palettize}{'itemize' replaced.}
 }
 
@@ -154,7 +154,7 @@
 }
 \ifbool{plt@KeepDescription}{}{
     \cslet{description}\PLTDescription
-    \cslet{enddescription}\PLTEndDescription
+    \cslet{enddescription}\endPLTDescription
     \PackageWarning{palettize}{'description' replaced.}
 }
 
