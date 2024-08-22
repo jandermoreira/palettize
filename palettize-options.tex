@@ -11,6 +11,8 @@
     \newbool{plt@LoadBoxes}
     \newbool{plt@LoadGetItems}
 
+    \newbool{plt@LoadAllPalettes}
+
     \newbool{plt@KeepEnumerate}
     \newbool{plt@KeepItemize}
     \newbool{plt@KeepDescription}
@@ -23,20 +25,16 @@
     itemizer/.is if = plt@LoadItemizer,
     boxes/.is if = plt@LoadBoxes,
     getitems/.is if = plt@LoadGetItems,
-    all/.code = {
-        \booltrue{plt@LoadItemizer}
-        \booltrue{plt@LoadGetItems}
-    },
+    all/.style = {itemizer, boxes, getitems},
+%
+% Palettes
+    all-palettes/.is if = plt@LoadAllPalettes,
 %
 % Itemizer
-    keepenumerate/.is if = plt@KeepEnumerate,
-    keepitemize/.is if = plt@KeepItemize,
-    keepdescription/.is if = plt@KeepDescription,
-    keepall/.code = {
-        \booltrue{plt@KeepEnumerate}
-        \booltrue{plt@KeepItemize}
-        \booltrue{plt@KeepDescription}
-    },
+    keep-enumerate/.is if = plt@KeepEnumerate,
+    keep-itemize/.is if = plt@KeepItemize,
+    keep-description/.is if = plt@KeepDescription,
+    keep-all/.style = {keep-enumerate, keep-itemize, keep-description},
 %
 % Otherwise
     .unknown/.code = {\PackageError{palettize}{Unknown option: \pgfkeyscurrentname}},
