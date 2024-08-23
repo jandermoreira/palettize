@@ -190,9 +190,9 @@
 }
 
 
-% PLTLoopPaletteList: sequentialy executes commands on each created palette;
+% PLTIteratePaletteList: sequentialy executes commands on each created palette;
 %   palette name is available in \PLTCurrentPalette
-\NewExpandableDocumentCommand{\PLTLoopPaletteList}{ +m }{
+\NewExpandableDocumentCommand{\PLTIteratePaletteList}{ +m }{
     \begingroup
     \tl_clear_new:N \PLTCurrentPalette
     \seq_map_inline:Nn \g_palette_list_seq {
@@ -202,9 +202,9 @@
     \endgroup
 }
 
-% PLTLoopPalette: sequentialy executes commands on each color of a given palette;
+% PLTIteratePalette: sequentialy executes commands on each color of a given palette;
 %   color name is available in \PLTCurrentColor
-\NewExpandableDocumentCommand{\PLTLoopPalette}{ m +m }{
+\NewExpandableDocumentCommand{\PLTIteratePalette}{ m +m }{
     \begingroup
     \PLTUsePalette{#1}
     \PLTResetLoop[#1]

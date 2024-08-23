@@ -4,19 +4,15 @@
 \documentclass[a4paper, 11pt]{article}
 \usepackage[T1]{fontenc}
 
-% \usepackage{amsfonts}
-% \usepackage{amsmath}
-\usepackage{textcomp}
 \usepackage[all]{nowidow}
 \usepackage{etoolbox}
 \usepackage{multicol}
-
-% \usepackage{array}
+\usepackage{textcomp}
 
 \usepackage{enumitem}
 \setlist{nosep}
 
-\usepackage[all, all-palettes]{palettize}
+%\usepackage[all, all-palettes]{palettize}
 
 
 %% Layout
@@ -248,7 +244,10 @@ This package was first released as v0.1%
 
 
 \section{Package usage and options}\label{sec:package-usage-and-options}
-This package is a collection of modules that can be loaded as options passed to the package \PackageName{palettize} or as standalone packages. It depends on the following packages:
+
+This package is a collection of modules that can be loaded as options passed to the \PackageName{palettize} package or as standalone packages.
+
+Currently, the implementation depends on the following packages:
 
 \begin{center}
     \begin{tabular}{ll}
@@ -265,20 +264,20 @@ This package is a collection of modules that can be loaded as options passed to 
         \usepackage{palettize}
     \end{latexcode}
 
-    This will load several macros to handle color palettes, as described in \cref{sec:palettes}.
+    This will define several macros for manipulating color palettes, as described in \cref{sec:palettes}, and is the core of the package.
 
     \bigskip
     Package \PackageName{palettize}'s specific options are:
 
     \begin{option}{all-palettes}{}
-        With \Option{all-palettes}, all pre-defined palettes are loaded and made available for use. The shipped palettes are presented in \Cref{sec:available-palettes}.
+        With \Option{all-palettes}, all predefined palettes are loaded and made available for use. The full list is given in \Cref{sec:available-palettes}.
     \end{option}
 
     \bigskip
-    To load modules, the following options can be passed:
+    To load specific modules, the following options can be passed:
 
     \begin{option}{boxes}{}
-        The module \Option{boxes} provides an easy way to transform a list of \Macro{items} in a colorful matrix of boxes.
+        The \Option{boxes} module provides an easy way to turn a list of \Macro{items} into a colored array of boxes.
 
         This module can also be loaded with:
         \begin{latexcode}
@@ -289,7 +288,7 @@ This package is a collection of modules that can be loaded as options passed to 
     \end{option}
 
     \begin{option}{itemizer}{}
-        This option enhances environments such as \latexinline{enumerate}, \latexinline{itemize}, and \latexinline{description} to use color palettes.
+        This option enhances environments like \latexinline{enumerate}, \latexinline{itemize} and \latexinline{description} to use color palettes.
 
         This module can also be loaded with:
         \begin{latexcode}
@@ -300,7 +299,7 @@ This package is a collection of modules that can be loaded as options passed to 
     \end{option}
 
     \begin{option}{getitems}{}
-        This option provides direct support to processing lists of items using the macro \latexinline{\item} as the itemizer. In practice, it provides macros for manipulating lists for other `palettize` resources, but can be used independently. \PackageName{palettize-getitems} is a ``core'' module used by \PackageName{palettize-boxes} and \PackageName{palettize-itemizer} and is available as a bonus feature.
+        This option provides direct support for processing lists of items using the \latexinline{\item} macro as an itemizer. In practice, it provides macros for manipulating lists for other \PackageName{palettize} modules, but can be used independently. \PackageName{palettize-getitems} is a ``core'' module used by \PackageName{palettize-boxes} and \PackageName{palettize-itemizer} and is available as a bonus feature.
 
         This module can also be loaded with:
         \begin{latexcode}
@@ -310,24 +309,35 @@ This package is a collection of modules that can be loaded as options passed to 
         Details in \Cref{sec:getitems}.
     \end{option}
 
-    Each module may have its own set of options, which are describe in their respective sections. All the module-specific options can also be passed directely to \PackageName{palettize} and if its respective module is not loaded, they are simply ignored.
+    Each module can have its own set of options, which are described in their respective sections. All module-specific options can also be passed directly to \PackageName{palettize} and if their respective module is not loaded, they are simply ignored.
+
+    As an example, both commands are equivalent:
+
+    \begin{latexcode}
+        \usepackage[itemizer, keep-description]{palettize}
+    \end{latexcode}
+
+    \vspace{-\baselineskip}
+    \begin{latexcode}
+        \usepackage[keep-description]{palettize-itemizer}
+    \end{latexcode}
 \end{macro*}
 
 
 \section{The palettes of \PackageName{palettize}}\label{sec:palettes}
 
-The package \PackageName{palettize} sees palettes as lists of background colors. Each color can be be a single background color as those defined using \PackageName{xcolor} or a foreground/background pair. A color pair is written \Argument{fg~color}~\latexinline{on}~\Argument{bg~color}, such as \latexinline{white on blue}. When just a single color is used in a palette, then the foreground color is the current document's color. For example, \latexinline{green} means \latexinline{. on green}\footnote{The ``dot'' color (\latexinline{.}) is the current color in package \PackageName{xcolor}.}.
+The \PackageName{palettize} package sees palettes as lists of background colors. Each color can be a single background color like those defined using \PackageName{xcolor} or a foreground/background pair. A color pair is written \Argument{fg~color}~\latexinline{on}~\Argument{bg~color}, such as \latexinline{white on blue}. When only a single color is used in a palette, the foreground color is the current color of the document. For example, \latexinline{green} means \latexinline{. on green}\footnote{The ``dot'' color (\latexinline{.}) is the current color in the \PackageName{xcolor} package.}
 
-A palette is created with \MacroRef{PLTCreatePalette}. As several different patterns can be created, the concept of current palette is used. To change the current palette, \MacroRef{PLTUsePalette} must be used. There is a default palette (see~\Cref{sec:available-palettes})
+A palette is created with \MacroRef{PLTCreatePalette} and since several different palettes can be created, the concept of the \textit{current} palette is used. To change the current palette, \MacroRef{PLTUsePalette} should be used. There is a default predefined palette (see~\Cref{sec:available-palettes}).
 
-Most of the macros will use the current palette, unless otherwise stated.
+Most macros will use the current palette unless otherwise noted.
 
 \begin{macro}{PLTCreatePalette}[\MArg{palette~name}]
-    \Macro{PLTCreatePalette} creates a new, empty palette called \Argument{palette~name} and inserts its name in list of defined palettes. Trying to create a palette with an existing name results in error.
+    \Macro{PLTCreatePalette} creates a new, empty palette named \Argument{palette~name} and inserts its name into the list of defined palettes. Attempting to create a palette with an existing name results in an error.
 \end{macro}
 
 \begin{macro}{PLTSetPalette}[\OArg{palette~name}\MArg{list~of~colors}]
-    The \Argument{list~of~colors} is comma-separated list of colors (single or in pairs) to be assigned to \Argument{pallete~name}.
+    The \Argument{list~of~colors} is a comma-separated list of colors (single or paired) to be assigned to the palette \Argument{palette~name}.
 \end{macro}
 
 \begin{tcblisting}{listing only}
@@ -340,10 +350,10 @@ Most of the macros will use the current palette, unless otherwise stated.
     }
 \end{tcblisting}
 
-The current palette can be set with \MacroRef{PLTUsePalette}.
+To set the current palette, \MacroRef{PLTUsePalette} must be used.
 
 \begin{macro}{PLTUsePalette}[\MArg{palette~name}]
-    This macro makes \Argument{palette~name} the current palette, so defining which palette macros such as \MacroRef{PLTUseCurrentColor} and \MacroRef{PLTNextColor}, for example, will work with.
+    This macro makes \Argument{palette~name} the current palette, thus defining which palette macros, like \MacroRef{PLTUseCurrentColor} and \MacroRef{PLTNextColor} for example, will work with.
 \end{macro}
 
 A palette set with \MacroRef{PLTSetPalette} is an ordered list of color and after set, its first color is the current color of the palette. The \PackageName{xcolor}'s colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} hold the current color.
@@ -364,18 +374,18 @@ A palette set with \MacroRef{PLTSetPalette} is an ordered list of color and afte
 \end{tcblisting}
 
 
-To change the current color, \MacroRef{PLTNextColor} will step to the next color, and \MacroRef{PLTResetLoop} will set the current color back to the first one.
+To change the current color, \MacroRef{PLTNextColor} will advance to the next color and \MacroRef{PLTResetLoop} will set the current color back to the first.
 
 \begin{macro}{PLTNextColor}[\OArg{palette~name}]
-    \Macro{PLTNextColor} changes the current color to the next in the sequence in an endless loop.
+    \Macro{PLTNextColor} changes the current color to the next one in the sequence cyclically.
 
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
+    If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
 \begin{macro}{PLTResetLoop}[\OArg{palette~name}]
-    Set the first color of the palette as the current color.
+    Sets the first color in the palette as the current color.
 
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is modified. This will not change the current palette.
+    If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
 \begin{tcblisting}{}
@@ -403,13 +413,13 @@ As already described, the current color always sets \latexinline{PLTBGColor} and
 \begin{macro}{PTLBGColorName}[\OArg{pattern~name}]
     \Macro{PTLBGColorName} expands to the current background color name of the current pattern.
 
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is the result. This will not change the current palette.
+    If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
 \begin{macro}{PTLFGColorName}[\OArg{pattern~name}]
     \Macro{PTLFGColorName} expands to the current foreground color name of the current pattern.
 
-    If an optional \Argument{palette~name} is specified, then the current color of that pattern is the result. This will not change the current palette.
+    If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
 \begin{tcblisting}{}
@@ -440,7 +450,9 @@ As already described, the current color always sets \latexinline{PLTBGColor} and
 Some palettes are shipped with this package and can be loaded with \MacroRef{PLTUseResource}.
 
 \begin{macro}{PLTUseResource}[\MArg{list~of~resources}]
-    The \Argument{list~of~resources} is a comma-separated list of resources that can be loaded. This macro can allows to use pre-existing palettes, which are stored in files named \texttt{palettize-\Argument{resource~name}.tex}.
+    The \Argument{list~of~resources} is a comma-separated list of resources that can be loaded. This macro can allow the use of pre-existing palettes, which are stored in files called \texttt{palettize-\Argument{resource~name}.tex}.
+
+    Palettes should be kept in this type of file, allowing new palettes to be created and made available for use.
 \end{macro}
 
 \begin{latexcode}
@@ -453,7 +465,7 @@ A palette called \latexinline{nightfall-ambiance} is always loaded and it is use
 
 \begin{tcolorbox}[width = 0.5\linewidth]
     \textbf{Palette nightfall-ambiance}\medskip\par
-    \PLTLoopPalette{nightfall-ambiance}{%
+    \PLTIteratePalette{nightfall-ambiance}{%
         \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName };
     }\par
 \end{tcolorbox}%
@@ -464,13 +476,13 @@ A palette called \latexinline{nightfall-ambiance} is always loaded and it is use
 The following palettes are available.
 
 \begin{multicols}{2}
-    \PLTLoopPaletteList{
+    \PLTIteratePaletteList{
         \expandafter\ifstrequal\expandafter{\PLTCurrentPalette}{nightfall-ambiance}{}{%
             \par
             \begin{tcolorbox}
                 \textbf{Palette \PLTCurrentPalette}\medskip\par
                 \latexinline{\PLTUseResource}\texttt{\{\PLTCurrentPalette\}}\strut\bigskip\par
-                \PLTLoopPalette{\PLTCurrentPalette}{%
+                \PLTIteratePalette{\PLTCurrentPalette}{%
                     \PLTUsePalette{\PLTCurrentPalette}
                     \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor,
                         font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName\strut};%
@@ -485,13 +497,15 @@ The palette \latexinline{default} can also be used, but is not loadable.
 
 \subsection{Palettes are local!}
 
-If a palette is used or created in a local scope\todo{Escrever!}
+For now, any of the macros that manipulate palettes use global changes. This means that a palette created inside a group (\Macro{begingroup}/\Macro{endgroup}), for example, will only exist inside that group. There are major drawbacks to this approach, as any changes to macros that create local scopes will break the expected behavior.
 
-\subsection{Looping through palettes and colors}
+This may change in future versions.
+
+\subsection{Iterating over palettes and colors}
 
 A simple mechanism is provided to access the list of palettes and the colors inside each one.
 
-\begin{macro}{PLTLoopPaletteList}[\MArg{code}]
+\begin{macro}{PLTIteratePaletteList}[\MArg{code}]
     This macro executes \Argument{code} for each existing palette. In each iteration \MacroDef{PLTCurrentPalette} is set to the palette's name, but the palette is not set as default with \MacroRef{PLTUsePalette}.
 \end{macro}
 
@@ -499,11 +513,11 @@ A simple mechanism is provided to access the list of palettes and the colors ins
     Palletes:
 
     \begin{enumerateenumerate}
-        \PLTLoopPaletteList{\item \PLTCurrentPalette}
+        \PLTIteratePaletteList{\item \PLTCurrentPalette}
     \end{enumerateenumerate}
 \end{tcblisting}
 
-\begin{macro}{PLTLoopPalette}[\MArg{palette name}\MArg{code}]
+\begin{macro}{PLTIteratePalette}[\MArg{palette name}\MArg{code}]
     This provides an iteration through all colors in \Argument{palette name} executing \Argument{code}. The colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} are set properly in each interaction. \MacroRef{PLTBGColorName} and \Macro{PLTFGColorName} are also available.
 \end{macro}
 
@@ -515,7 +529,7 @@ A simple mechanism is provided to access the list of palettes and the colors ins
         green!50!black on green!40!black!50,
         blue!60 on blue!50!black
     }
-    \PLTLoopPalette{new example}{%
+    \PLTIteratePalette{new example}{%
         \tikz\path[draw = PLTFGColor, fill = PLTBGColor, ultra thick] (0, 0) circle (5pt);\quad%
     }
 \end{tcblisting}
@@ -606,11 +620,7 @@ The module \PackageName{palettize-itemizer} adds color palettes to lists. Curren
         This is the same as using \Option{keep-enumerate}, \Option{keep-itemize}, and \Option{keep-description} toghether.
     \end{option}
 
-    All of these options can be specified also when using \latexinline{\usepackage{palettize}}. For example:
-
-    \begin{latexcode}
-        \usepackage[itemizer, keep-description]{palettize}
-    \end{latexcode}
+    All of these options can be specified also when using \latexinline{\usepackage{palettize}}.
 \end{macro*}
 
 The modified lists are exemplified below.
