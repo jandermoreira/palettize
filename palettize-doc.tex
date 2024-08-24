@@ -12,7 +12,7 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
-%\usepackage[all, all-palettes]{palettize}
+\usepackage[all, all-palettes]{palettize}
 
 
 %% Layout
@@ -48,19 +48,30 @@
 \usepackage{color}
 \usepackage{comment}
 \tcbuselibrary{skins, listings, minted, breakable}
-\tcbset{
+
+\newtcblisting{example}[1]{
+    enhanced jigsaw,
+    breakable,
     colback = blue!3,
+    colframe = blue!40!black!30,
     sharp corners,
     box align = top,
-    boxrule = 0pt,
+    boxrule = 1pt,
     fontupper = \footnotesize,
     fontlower = \footnotesize,
-    minted options={
+    minted options = {
         fontsize = \footnotesize,
         breaklines,
         autogobble,
     },
     listing engine = minted,
+    %extras middle and last = {
+    %%    %\coordinate (A1) at ($(interior.south east) + (-10pt,5pt)$);
+    %%    %\coordinate (C1) at ($(interior.south east) + (-6pt,7.5pt)$);
+    %%    %\draw[fill=blue] (A1) -- +(0,5pt) -- (C1) -- cycle;
+    %    \draw[dashed, gray] (interior.south west) -- (interior.south east);
+    %},
+    #1
 }
 
 % Versions
@@ -340,7 +351,11 @@ Most macros will use the current palette unless otherwise noted.
     The \Argument{list~of~colors} is a comma-separated list of colors (single or paired) to be assigned to the palette \Argument{palette~name}.
 \end{macro}
 
-\begin{tcblisting}{listing only}
+\begin{tcolorbox}
+    color
+\end{tcolorbox}
+
+\begin{example}{listing only, breakable = false}
     \PLTCreatePalette{sample}
     \PLTSetPalette{sample}{
         white on blue,
@@ -348,7 +363,7 @@ Most macros will use the current palette unless otherwise noted.
         blue on orange!60,
         green  % single color
     }
-\end{tcblisting}
+\end{example}
 
 To set the current palette, \MacroRef{PLTUsePalette} must be used.
 
@@ -358,7 +373,7 @@ To set the current palette, \MacroRef{PLTUsePalette} must be used.
 
 A palette set with \MacroRef{PLTSetPalette} is an ordered list of color and after set, its first color is the current color of the palette. The \PackageName{xcolor}'s colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} hold the current color.
 
-\begin{tcblisting}{}
+\begin{example}{}
     \PLTCreatePalette{my colors}
     \PLTSetPalette{my colors}{
         yellow on blue,
@@ -371,7 +386,7 @@ A palette set with \MacroRef{PLTSetPalette} is an ordered list of color and afte
 
     \PLTNextColor
     And \colorbox{PLTBGColor}{\textcolor{PLTFGColor}{this}} is the last one.
-\end{tcblisting}
+\end{example}
 
 
 To change the current color, \MacroRef{PLTNextColor} will advance to the next color and \MacroRef{PLTResetLoop} will set the current color back to the first.
@@ -388,7 +403,7 @@ To change the current color, \MacroRef{PLTNextColor} will advance to the next co
     If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     % \usepackage{etoolbox}
     \PLTCreatePalette{primary}
     \PLTSetPalette{primary}{red, blue, yellow}
@@ -405,7 +420,7 @@ To change the current color, \MacroRef{PLTNextColor} will advance to the next co
         \PLTNextColor
         \PLTNextColor[secondary]
     }{\par, \par, \par, \par, \par, \par, \par} % 7 times
-\end{tcblisting}
+\end{example}
 
 
 As already described, the current color always sets \latexinline{PLTBGColor} and \latexinline{PLTFGColor}. Their names are available through \MacroRef{PLTBGColorName} and \MacroRef{PLTFGColorName} respectively.
@@ -422,7 +437,7 @@ As already described, the current color always sets \latexinline{PLTBGColor} and
     If an optional \Argument{palette~name} is specified, then the current color of this pattern will be modified. This will not change the current palette.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     % \usepackage{etoolbox}
     \definecolor{indigo}{RGB}{75, 0, 130}
     \PLTCreatePalette{rainbow}
@@ -443,7 +458,7 @@ As already described, the current color always sets \latexinline{PLTBGColor} and
             \PLTNextColor%
         }{{}, {}, {}, {}, {}, {}, {}}%
     \end{center}
-\end{tcblisting}
+\end{example}
 
 \subsection{Available palettes}\label{sec:available-palettes}
 
@@ -463,10 +478,10 @@ Some palettes are shipped with this package and can be loaded with \MacroRef{PLT
 
 A palette called \latexinline{nightfall-ambiance} is always loaded and it is used as the default palette by all modules.
 
-\begin{tcolorbox}[width = 0.5\linewidth]
+\begin{tcolorbox}[width = 0.5\textwidth, boxrule = 0pt]
     \textbf{Palette nightfall-ambiance}\medskip\par
     \PLTIteratePalette{nightfall-ambiance}{%
-        \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName };
+        \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 0.8em] {\PLTFGColorName\ on \PLTBGColorName };
     }\par
 \end{tcolorbox}%
 
@@ -479,13 +494,13 @@ The following palettes are available.
     \PLTIteratePaletteList{
         \expandafter\ifstrequal\expandafter{\PLTCurrentPalette}{nightfall-ambiance}{}{%
             \par
-            \begin{tcolorbox}
+            \begin{tcolorbox}[boxrule = 0pt]
                 \textbf{Palette \PLTCurrentPalette}\medskip\par
                 \latexinline{\PLTUseResource}\texttt{\{\PLTCurrentPalette\}}\strut\bigskip\par
                 \PLTIteratePalette{\PLTCurrentPalette}{%
                     \PLTUsePalette{\PLTCurrentPalette}
                     \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor,
-                        font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 1em] {\PLTFGColorName\ on \PLTBGColorName\strut};%
+                        font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 0.8em] {\PLTFGColorName\ on \PLTBGColorName\strut};%
                     \par%
                 }
             \end{tcolorbox}%
@@ -493,9 +508,7 @@ The following palettes are available.
     }
 \end{multicols}
 
-The palette \latexinline{default} can also be used, but is not loadable.
-
-\subsection{Palettes are local!}
+\subsection{Palettes are local!}\label{sec:palettes-are-local}
 
 For now, any of the macros that manipulate palettes use global changes. This means that a palette created inside a group (\Macro{begingroup}/\Macro{endgroup}), for example, will only exist inside that group. There are major drawbacks to this approach, as any changes to macros that create local scopes will break the expected behavior.
 
@@ -509,19 +522,19 @@ A simple mechanism is provided to access the list of palettes and the colors ins
     This macro executes \Argument{code} for each existing palette. In each iteration \MacroDef{PLTCurrentPalette} is set to the palette's name, but the palette is not set as default with \MacroRef{PLTUsePalette}.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     Palletes:
 
     \begin{enumerateenumerate}
         \PLTIteratePaletteList{\item \PLTCurrentPalette}
     \end{enumerateenumerate}
-\end{tcblisting}
+\end{example}
 
 \begin{macro}{PLTIteratePalette}[\MArg{palette name}\MArg{code}]
     This provides an iteration through all colors in \Argument{palette name} executing \Argument{code}. The colors \latexinline{PLTBGColor} and \latexinline{PLTFGColor} are set properly in each interaction. \MacroRef{PLTBGColorName} and \Macro{PLTFGColorName} are also available.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{unbreakable}
     % \usepackage{tikz}
     \PLTCreatePalette{new example}
     \PLTSetPalette{new example}{
@@ -532,7 +545,7 @@ A simple mechanism is provided to access the list of palettes and the colors ins
     \PLTIteratePalette{new example}{%
         \tikz\path[draw = PLTFGColor, fill = PLTBGColor, ultra thick] (0, 0) circle (5pt);\quad%
     }
-\end{tcblisting}
+\end{example}
 
 \section{Modules}
 
@@ -540,62 +553,75 @@ This sections describes the modules in detail.
 
 \subsection{Boxes}\label{sec:boxes}
 
-\begin{tcblisting}{}
+Boxes are just the \textit{raster array} from \PackageName{tcolorbox} with support for palettes. Therefore, practically all features from the \latexinline{tcbraster} environment can be used. The same is true for each color box.
+
+The intent here is to provide an easier way to get things done.
+
+The environment \latexinline{PLTBoxItemize} is used to create a box for ecah item in a list. The current palette is used to choose the colors used in each box.
+
+\begin{example}{}
+    This is a boxed list with the current (default) palette:
+
     \begin{PLTBoxItemize}
-        <raster columns = 2>
+        \item Software is related to the programs that instruct the execution of a computer.
+        \item Hardware is the physical part of a computer, such as processor, memory, motherboard, data storage units etc.
+        \item Firmware is the software that provides low-level control of computing device hardware.
+        \item Middleware is a type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{PLTBoxItemize}
+\end{example}
+
+Each item in the list corresponds to a \Macro{item} and any text before the first item is ignored\footnote{The body of the environment is processed with \PackageName{palettize-getitem} (\Cref{sec:getitems}).}.
+
+An optional title for each box can be provided.
+
+\begin{example}{}
+    \begin{PLTBoxItemize}
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
     \end{PLTBoxItemize}
-\end{tcblisting}
+\end{example}
 
-\begin{tcblisting}{}
-    \PLTCreatePalette{shades of blue}
-    \PLTSetPalette{shades of blue}{
-        black on blue!40,
-        black on blue!50,
-        black!10 on blue!90!black,
-        black!5 on blue!80!black
-    }
-    \PLTUsePalette{shades of blue}
+Since boxes are rendered using \PackageName{tcolorbox}'s raster, the new environments can pass specific options using angle brackets.
+
+\begin{example}{}
     \begin{PLTBoxItemize}
+        <raster equal height = none, raster valign = center, raster columns = 4>
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
     \end{PLTBoxItemize}
-\end{tcblisting}
+\end{example}
 
-\begin{tcblisting}{}
-    \PLTCreatePalette{shades of green}
-    \PLTSetPalette{shades of green}{
-        white on green!80!brown!55!black,
-        white on green!30!black
-    }
-    \PLTUsePalette{shades of green}
-    \begin{PLTBoxItemize}
+Numbered boxes are created using the \latexinline{PLTBoxEnumerate} environment.
+
+\begin{example}{}
+    \begin{PLTBoxEnumerate}
         <raster columns = 1, raster equal height = none>
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxItemize}
-\end{tcblisting}
+    \end{PLTBoxEnumerate}
+\end{example}
 
-\begin{tcblisting}{}
+The boxes colors depend on the current palette.
+
+\begin{example}{}
     \PLTUseResource{toasted-peach}
     \PLTUsePalette{toasted-peach}
     \begin{tcolorbox}[colback = black]
         \begin{PLTBoxEnumerate}
             <raster columns = 2>
             \item[Software] Computer programs that instruct the execution of a computer.
-            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
             \item[Firmware] Software that provides low-level control of computing device hardware.
             \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
         \end{PLTBoxEnumerate}
     \end{tcolorbox}
-\end{tcblisting}
+\end{example}
 
 \subsection{Lists}\label{sec:itemizer}
 
@@ -625,25 +651,25 @@ The module \PackageName{palettize-itemizer} adds color palettes to lists. Curren
 
 The modified lists are exemplified below.
 
-\begin{tcblisting}{}
+\begin{example}{}
     \begin{itemize}
         \item Software: Computer programs that instruct the execution of a computer.
         \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item Firmware: Software that provides low-level control of computing device hardware.
         \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
     \end{itemize}
-\end{tcblisting}
+\end{example}
 
-\begin{tcblisting}{}
+\begin{example}{}
     \begin{enumerate}
         \item Software: Computer programs that instruct the execution of a computer.
         \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item Firmware: Software that provides low-level control of computing device hardware.
         \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
     \end{enumerate}
-\end{tcblisting}
+\end{example}
 
-\begin{tcblisting}{}
+\begin{example}{}
     \begin{tabular}{p{0.45\linewidth}p{0.45\linewidth}}
         \begin{description}
             \item[Software] Computer programs that instruct the execution of a computer.
@@ -661,7 +687,7 @@ The modified lists are exemplified below.
             \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
         \end{description}
     \end{tabular}
-\end{tcblisting}
+\end{example}
 
 \subsubsection{New environments for lists}
 
@@ -680,7 +706,7 @@ Three new environments were created to handle palette-aware lists: \latexinline{
 
 When the option \OptionRef{keep-all} is used, all colored environments are available using these alternatives.
 
-\begin{tcblisting}{}
+\begin{example}{}
     \begin{PLTEnumerate}
         \item One
         \item Two
@@ -700,7 +726,7 @@ When the option \OptionRef{keep-all} is used, all colored environments are avail
         \item [Two] Second.
         \item [Three] Third.
     \end{PLTDescription}
-\end{tcblisting}
+\end{example}
 
 \subsubsection{Accessing the original list environments}
 
@@ -718,7 +744,7 @@ If a list environment was not preserved by any of the \Option{keep-\Argument{lis
 \end{center}
 
 \bigskip
-\begin{tcblisting}{}
+\begin{example}{}
     This is an original unnumbered list:
 
     \begin{itemizeitemize}
@@ -727,21 +753,37 @@ If a list environment was not preserved by any of the \Option{keep-\Argument{lis
         \item Firmware: Software that provides low-level control of computing device hardware.
         \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
     \end{itemizeitemize}
-\end{tcblisting}
+\end{example}
+
+Double-named versions are always created, even if \Option{keep-\Argument{list~name}} is specified as an option.
 
 \subsection{Compatibility with other packages}
 
-The module \PackageName{palettize-itemizer} seem to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testes were carried out.
+The module \PackageName{palettize-itemizer} appears to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testing has been performed.
 
+\section{Beamer}
 
-\section{Known issues and limitations}\label{sec:known-issues-and-limitations}
+So far, everything seems to work fine with Beamer, as long as the slide overlays remain simple.
 
-\begin{center}
-    \begin{descriptiondescription}
-        \item[\PackageName{pgffor}] current color is local and \latexinline{\foreach} will not work.
-        \item[] Foreground color changes inside boxes using \Macro{color} or \Macro{textcolor} are bounded by the limitations described in the documentation of \PackageName{xcolor} (Section~2.6.4, \PackageName{xcolor} v2.14, 2022/06/12).
-    \end{descriptiondescription}
-\end{center}
+Support for using this package with the Beamer class is in its early stages and is a long-term effort.
+
+%\section{Known issues and limitations}\label{sec:known-issues-and-limitations}
+%
+%\begin{center}
+%    \begin{descriptiondescription}
+%        \item[\PackageName{pgffor}] current color is local and \latexinline{\foreach} will not work.
+%        \item[] Foreground color changes inside boxes using \Macro{color} or \Macro{textcolor} are bounded by the limitations described in the documentation of \PackageName{xcolor} (Section~2.6.4, \PackageName{xcolor} v2.14, 2022/06/12).
+%    \end{descriptiondescription}
+%\end{center}
+
+\section{Wish list}
+
+Future work should deal with:
+\begin{itemizeitemize}
+    \item Adding global options that change the default behavior;
+    \item Adding local options to the new environments, so global behavior may be changed locally;
+    \item Thinking about local vs. global actions on palettes (see \Cref{sec:palettes-are-local}).
+\end{itemizeitemize}
 
 \clearpage
 \appendix
@@ -764,7 +806,7 @@ These are tools for processing lists with \Macro{item} as itemizer.
     This macro expands to the \Argument{item~number}\textsuperscript{th} item the last list parsed with \MacroRef{PLTGatherItems}.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     \PLTGatherItems{
         Grocery list
         \item Beans
@@ -776,13 +818,13 @@ These are tools for processing lists with \Macro{item} as itemizer.
     }
 
     This is my \PLTGetHeader: \PLTGetItem{1} and \PLTGetItem{4} are present.
-\end{tcblisting}
+\end{example}
 
 \begin{macro}{PLTMapCommand}[\MArg{macro}]
     \Macro{PLTMapCommand} sequentially runs \Argument{macro} in every item.
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     \PLTGatherItems{
         \item artificial intelligence,
         \item cloud computing, and
@@ -790,10 +832,10 @@ These are tools for processing lists with \Macro{item} as itemizer.
     }
     \NewDocumentCommand{\showwithbullet}{ +m }{\textbullet~#1 }
     Important topics: \PLTMapCommand{\showwithbullet}
-\end{tcblisting}
+\end{example}
 
 %! formatter = off
-\begin{tcblisting}{}
+\begin{example}{}
     \NewDocumentCommand{\showinline}{ +m }{>>~#1 }
     \NewDocumentEnvironment{importantlisting}{ +b }{%
         \PLTGatherItems{#1}
@@ -815,7 +857,7 @@ These are tools for processing lists with \Macro{item} as itemizer.
         \item Pray\par
         \item Love\par
     \end{importantlisting}
-\end{tcblisting}
+\end{example}
 %! formatter = on
 
 \begin{macro}{PLTParseItem}[\MArg{type~macro}\MArg{angle~macro}\MArg{brackets-macro}\MArg{text~macro}\MArg{text}]
@@ -834,7 +876,7 @@ These are tools for processing lists with \Macro{item} as itemizer.
     \end{itemizeitemize}
 \end{macro}
 
-\begin{tcblisting}{}
+\begin{example}{}
     \PLTParseItem{\opttype}{\angleopts}{\bracketopts}{\body}{%
         [font=sffamily]<*>Some \textit{text}%
     }
@@ -842,10 +884,10 @@ These are tools for processing lists with \Macro{item} as itemizer.
     In angle brackets: \texttt{\angleopts}\par
     In brackets: \texttt{\bracketopts}\par
     Text: \texttt{\body}\par
-\end{tcblisting}
+\end{example}
 
 %! formatter = off
-\begin{tcblisting}{}
+\begin{example}{}
     \NewDocumentCommand{\showiteminbox}{ +m }{%
         \PLTParseItem{\opttype}{\angleopts}{\bracketopts}{\body}{#1}%
         \fbox{%
@@ -880,9 +922,8 @@ These are tools for processing lists with \Macro{item} as itemizer.
         \item[.] Brown  % uses current document's color
     \end{boxedlist}
     \endgroup
-\end{tcblisting}
+\end{example}
 %! formatter = on
-
 
 %% Index
 \printindex
