@@ -4,19 +4,15 @@
 \RequirePackage{etoolbox}
 
 % Options
-\ifcsdef{plt@VariablesDeclared}{}{
-    \csdef{plt@VariablesDeclared}{}
+\providebool{plt@LoadItemizer}
+\providebool{plt@LoadBoxes}
+\providebool{plt@LoadGetItems}
 
-    \newbool{plt@LoadItemizer}
-    \newbool{plt@LoadBoxes}
-    \newbool{plt@LoadGetItems}
+\providebool{plt@LoadAllPalettes}
 
-    \newbool{plt@LoadAllPalettes}
-
-    \newbool{plt@KeepEnumerate}
-    \newbool{plt@KeepItemize}
-    \newbool{plt@KeepDescription}
-}
+\providebool{plt@KeepEnumerate}
+\providebool{plt@KeepItemize}
+\providebool{plt@KeepDescription}
 
 \pgfkeys{
     /palettize/.cd,
