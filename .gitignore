@@ -301,5 +301,6 @@ TSWLatexianTemp*
 #*Notes.bib
 
 .idea/
+out/
 
 test-*.tex
