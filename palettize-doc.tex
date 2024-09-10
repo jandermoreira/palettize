@@ -557,17 +557,17 @@ Boxes are just the \textit{raster array} from \PackageName{tcolorbox} with suppo
 
 The intent here is to provide an easier way to get things done.
 
-The environment \latexinline{PLTBoxItemize} is used to create a box for ecah item in a list. The current palette is used to choose the colors used in each box.
+The environment \latexinline{PLTBoxRaster} is used to create a box for ecah item in a list. The current palette is used to choose the colors used in each box.
 
 \begin{example}{}
     This is a boxed list with the current (default) palette:
 
-    \begin{PLTBoxItemize}
+    \begin{PLTBoxRaster}
         \item Software is related to the programs that instruct the execution of a computer.
         \item Hardware is the physical part of a computer, such as processor, memory, motherboard, data storage units etc.
         \item Firmware is the software that provides low-level control of computing device hardware.
         \item Middleware is a type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxItemize}
+    \end{PLTBoxRaster}
 \end{example}
 
 Each item in the list corresponds to a \Macro{item} and any text before the first item is ignored\footnote{The body of the environment is processed with \PackageName{palettize-getitem} (\Cref{sec:getitems}).}.
@@ -575,36 +575,36 @@ Each item in the list corresponds to a \Macro{item} and any text before the firs
 An optional title for each box can be provided.
 
 \begin{example}{}
-    \begin{PLTBoxItemize}
+    \begin{PLTBoxRaster}
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxItemize}
+    \end{PLTBoxRaster}
 \end{example}
 
 Since boxes are rendered using \PackageName{tcolorbox}'s raster, the new environments can pass specific options using angle brackets.
 
 \begin{example}{}
-    \begin{PLTBoxItemize}
+    \begin{PLTBoxRaster}
         <raster equal height = none, raster valign = center, raster columns = 4>
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxItemize}
+    \end{PLTBoxRaster}
 \end{example}
 
-Numbered boxes are created using the \latexinline{PLTBoxEnumerate} environment.
+Numbered boxes are created using the \latexinline{PLTBoxRaster} environment.
 
 \begin{example}{}
-    \begin{PLTBoxEnumerate}
+    \begin{PLTBoxRaster}[enumerate]
         <raster columns = 1, raster equal height = none>
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
         \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxEnumerate}
+    \end{PLTBoxRaster}
 \end{example}
 
 The boxes colors depend on the current palette.
@@ -613,13 +613,13 @@ The boxes colors depend on the current palette.
     \PLTUseResource{toasted-peach}
     \PLTUsePalette{toasted-peach}
     \begin{tcolorbox}[colback = black]
-        \begin{PLTBoxEnumerate}
+        \begin{PLTBoxRaster}[enumerate]
             <raster columns = 2>
             \item[Software] Computer programs that instruct the execution of a computer.
             \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
             \item[Firmware] Software that provides low-level control of computing device hardware.
             \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-        \end{PLTBoxEnumerate}
+        \end{PLTBoxRaster}
     \end{tcolorbox}
 \end{example}
 
