@@ -5,6 +5,8 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{palettize-boxes}[2024/08/01 v0.1 Puts itemized lists in boxes]
 
+\input{palettize-options}
+
 \RequirePackage{tcolorbox}
 \tcbuselibrary{raster, skins}
 \usetikzlibrary{calc}
@@ -21,19 +23,25 @@
     \boolfalse{plt@UsingBeamer}
 }
 
+\newlength{\ds@RasterWidth}
+\setlength{\ds@RasterWidth}{\linewidth}
 
 % Styles
 
 \tcbset{
 % boxes
-    box itemize/.style = {
+    itemize/.style = {
+        enhanced,
         left = 0.25em,
         right = 0.25em,
         top = 0.5em,
         bottom = 0.5em,
         boxrule = 0.1em,
         colframe = PLTBGColor!40!black,
-        colback = PLTBGColor,
+        interior style={
+            top color = PLTBGColor!90!black,
+            bottom color = PLTBGColor!95,
+        },
         valign = top,
         halign = flush left,
         halign lower = flush left,
@@ -42,19 +50,21 @@
         fontlower = \sffamily\color{PLTFGColor},
         fonttitle = \sffamily\color{PLTFGColor!10},
     },%
-    box enumerate/.style = {
-        box itemize,
-        enhanced,
-        enlarge top by = 5.5mm,
+    itemize width fix/.code = {\setlength{\ds@RasterWidth}{\dimexpr \kvtcb@raster@width}},
+    enumerate/.style = {
+        itemize,
+        enlarge top by = 1em,
+        enlarge left by = 1em,
         lefttitle = 0.8em,
         overlay = {
             \coordinate (North West) at ($(frame.north west) + (0.05em, -0.05em)$);
             \path [fill = PLTBGColor!40!black] (North West) circle (1em);
             \path [thick, draw = PLTBGColor] (North West) circle (0.9em);
             \path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\thetcbrasternum};
+            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\theplt@BoxNumber};
         },
     },
+    enumerate width fix/.code = {\setlength{\ds@RasterWidth}{\dimexpr \kvtcb@raster@width - (1em + 1pt) * \kvtcb@raster@columns}},
     red box/.style = {
         left = 0.25em,
         right = 0.25em,
@@ -86,6 +96,8 @@
     },
 }
 
+% Variables
+\newcounter{plt@BoxNumber}
 
 % Code
 \NewDocumentCommand{\plt@ShowColorBox}{ +m }{%
@@ -93,35 +105,40 @@
         #1
     \end{tcolorbox}%
 }
-\NewExpandableDocumentCommand{\plt@ShowItem}{ m m m +m }{%
+\NewDocumentCommand{\plt@ShowItem}{ m m m +m m }{%
     \PLTIfType{#1}{B, AB}{%
-        \tcbset{plt@@single item/.style = {squeezed title = {#3}}}%
+        \tcbset{plt@@single item/.append style = {squeezed title = {#3}}}%
     }{%
-        \tcbset{plt@@single item/.style = {}}%
+        \tcbset{plt@@single item/.append style = {}}%
     }%
     \ifbool{plt@UsingBeamer}{%
         \PLTIfType{#1}{A, AB}{%
-            \visible<#2>{\plt@ShowColorBox{#4}}%
+            \visible<#2>{#5{#4}}%
         }{%
-            \plt@ShowColorBox{#4}%
+            #5{#4}%
         }%
     }{%
-        \plt@ShowColorBox{#4}%
+        #5{#4}%
     }%
 }
 
-\NewDocumentEnvironment{PLTBoxItemize}{ O{box itemize} D<>{} +b }{%
+\NewDocumentEnvironment{PLTBoxRaster}{ O{itemize} D<>{} +b }{%
     \begingroup%
     \PLTGatherItems{#3}%
     \PLTResetLoop%
+    \tcbset{plt@@single item/.style = {}}%
+    \defcounter{plt@BoxNumber}{0}%
     \begin{tcbraster}[
         grid plain,
         raster every box/.style = {#1},
-        #2
+        #2,
+        #1 width fix,
+        raster width = \ds@RasterWidth,
     ]
         \PLTMapInline{%
+            \stepcounter{plt@BoxNumber}%
             \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
-            \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}%
+            \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
             \PLTNextColor%
         }%
     \end{tcbraster}%
@@ -129,250 +146,35 @@
     }{%
 }
 
-\NewDocumentEnvironment{PLTBoxEnumerate}{ O{} D<>{} }{%
-    \begin{PLTBoxItemize}[box enumerate, #1]
-        <grid enumerate default, #2>
-            }{
-    \end{PLTBoxItemize}
-}
+%\NewDocumentEnvironment{PLTBoxEnumerate}{ O{} D<>{} }{%
+%    \begin{PLTBoxRaster}[enumerate, #1]
+%        <grid enumerate default, #2>
+%            }{
+%    \end{PLTBoxRaster}
+%}
+%
+%\NewDocumentEnvironment{PLTBoxItemize}{ O{} D<>{} }{%
+%    \begin{PLTBoxRaster}[itemize, #1]
+%        <grid enumerate default, #2>
+%            }{
+%    \end{PLTBoxRaster}
+%}
 
-% % Variables
-% \NewDocumentCommand{\boxing@Colums}{}{}
-% \NewDocumentCommand{\boxing@EqualHeight}{}{}
-% \NewDocumentCommand{\boxing@Palette}{}{}%
-% \newif\ifboxing@Continued
-%
-%
-% \NewDocumentCommand{\boxingset}{ >{\TrimSpaces} m }{%
-%     \pgfkeys{
-%         /boxing/.cd,
-%         #1
-%     }
-% }
-%
-% % Default settings
-% \boxingset{
-%     columns = auto,
-%     equal height = all,
-%     row skip = 2ex,
-%     continued = false,
-%     palette = Toasted Peach,
-% }
-%
-%
-% % Tikz
-% \RequirePackage{tikz}
-% \tikzset{
-%     picture box/.style = {
-%         baseline = (text.base),
-%     },
-%     every text node/.style = {
-%         draw = \CurrentBGColor!70!black, ultra thick,
-%         ultra thick,
-%         text = \CurrentFGColor,
-%         font = \footnotesize,
-%         text width = \BoxWidth,
-%         inner xsep = 0.75em,
-%         inner ysep = 0.5em,
-%         shade,
-%         right color = \CurrentBGColor!70,
-%         left color = \CurrentBGColor,
-%         % bottom color = \CurrentBGColor!50,
-%     },
-% }
-%
-% \NewDocumentCommand{\BoxBody}{}{}
-% \NewDocumentCommand{\HBox}{m}{%
-%     \UsePalette{\boxing@Palette}%
-%     \RenewDocumentCommand{\BoxBody}{}{\trim@spaces{#1}}%
-%     \begingroup%
-%     %! formatter = off
-%     \ifboxing@UseBeamer%
-%     \setbeamerfont{itemize/enumerate body}{size = \footnotesize}%
-%     \setbeamercolor{itemize/enumerate body}{fg = \CurrentFGColor}%
-%     \setbeamercolor{structure}{fg = \CurrentFGColor}%
-%     \fi%
-%     %! formatter = on
-%     \begin{tikzpicture}[picture box]
-%         \node[every text node] (text) {\raggedright\BoxBody\strut};
-%     \end{tikzpicture}%
-%     \endgroup%
-%     \StepPalette{\boxing@Palette}%
-%     \ifnum
-%         \thecurrentitemnumber=\thenumgathereditems\else%
-%         \hfill%
-%     \fi%
-% }
-%
-% % Environments
-% \NewEnviron{horizontalbox}[1][]{%
-%     \expandafter\gatheritems\expandafter{\BODY}%
-%     \ResetPalette{\boxing@Palette}%
-%     \setlength{\BoxWidth}{
-%         \dimexpr \textwidth/\thenumgathereditems - 1.5em -
-%         \BoxHSpacing
-%     }%
-%     \loopthroughitemswithcommand{\HBox}%
-% }
-%
-% \RequirePackage{ragged2e}
-%
-% \RequirePackage{tcolorbox}
-% \newif\ifUseIcon
-% \UseIconfalse
-% \NewDocumentCommand{\TCBBoxCircle}{ m m +m }{%
-% \visible<#1>{%
-%     \begin{tcolorbox}[
-%         left = 0.25em,
-%         right = 0.25em,
-%         bottom = 0pt,
-%         coltext = \CurrentFGColor,
-%         colback = \CurrentBGColor,
-%         colframe = \CurrentBGColor!70!black,
-%         toprule = 0.1em,
-%         bottomrule = 0.1em,
-%         leftrule = 0.1em,
-%         rightrule = 0.1em,
-%         enhanced,
-%         enlarge left by = 1em,
-%         enlarge top by = 1em,
-%         interior style = {
-%             top color = \CurrentBGColor,
-%             bottom color = \CurrentBGColor!80!white,
-%         },
-%         overlay = {
-%             \coordinate (North West) at ($(frame.north west) + (0.05em, -0.05em)$);
-%         \path [fill = \CurrentBGColor!90!black] (North West) circle (1em);
-%     \path [thick, draw = \CurrentBGColor!30!white] (North West) circle (0.9em);
-%     \path [draw = \CurrentBGColor!70!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-%     \node[font = \itshape, align = center, text = \CurrentFGColor] at ($(frame.north west) + (0.05em, -0.05em)$) {\ifUseIcon\includegraphics[width = 1.2em, height = 1.2em]{icons/#2}\else\scalebox{1.2}{#2}\fi};
-% },
-% ]
-% \RaggedRight\rule{0pt}{2ex}#3
-% \end{tcolorbox}%
-% }%
-% }
-%
-% \NewDocumentCommand{\TCBBoxPlain}{ m m +m }{%
-% \visible<#1>{%
-% \begin{tcolorbox}[
-% left = 0.25em,
-% right = 0.25em,
-% bottom = 0pt,
-% top = 0pt,
-% coltext = \CurrentFGColor,
-% colback = \CurrentBGColor,
-% colframe = \CurrentBGColor!70!black,
-% toprule = 0.1em,
-% bottomrule = 0.1em,
-% leftrule = 0.1em,
-% rightrule = 0.1em,
-% enhanced,
-% interior style = {
-% top color = \CurrentBGColor,
-% bottom color = \CurrentBGColor!80!white,
-% },
-% ]
-% \RaggedRight#3
-% \end{tcolorbox}%
-% }%
-% }
-%
-%
-% \NewDocumentCommand{\TCBInternal}{ m +m }{%
-%     \UsePaletteByNumber{\boxing@Palette}{\theCurrentItemNumber}%
-%     \ProcessItemArguments{\l@code}{\l@overlay}{\l@option}{\l@text}{#2}%
-%     \ifx
-%         \l@overlay\empty%
-%         \RenewExpandableDocumentCommand{\l@overlay}{}{1-}%
-%     \fi
-%     \ifx
-%         \l@option\empty%
-%         \UseIconfalse%
-%         \RenewExpandableDocumentCommand{\l@option}{}{\theCurrentItemNumber}%
-%     \else
-%         \UseIcontrue%
-%     \fi%
-%     \ifboxing@UseBeamer%
-%     \setbeamerfont{itemize/enumerate body}{size = \footnotesize}%
-%     \setbeamercolor{itemize/enumerate body}{fg = \CurrentFGColor}%
-%     \setbeamercolor{structure}{fg = \CurrentFGColor}%
-%     \fi%
-%     #1{\l@overlay}{\l@option}{\l@text}%
-%     \stepcounter{CurrentItemNumber}%
-% }
-%
-% % interface commands
-% \NewDocumentCommand{\TCB}{ +m }{%
-% \TCBInternal{\TCBBoxCircle}{#1}%
-% }
-%
-% \NewDocumentCommand{\TCBsimple}{ +m }{%
-% \TCBInternal{\TCBBoxPlain}{#1}%
-% }
-%
-% \newcounter{CurrentItemNumber}
-% \NewDocumentEnvironment{mybox}{ O{} +b }{%
-% \begingroup%
-% \gatheritems{#2}%
-% %! formatter = off
-% \boxingset{continued = false}
-% \pgfkeys{%
-% /boxing/.cd,
-% #1
-% }%
-% \ifboxing@Continued\else
-% \ResetPalette{Colored Coolers}%
-% \setcounter{CurrentItemNumber}{1}%
-% \fi
-% %! formatter = on
-% \begin{tcbraster}[
-% raster columns = \boxing@Colums,
-% raster halign = center,
-% raster right skip = \dimexpr 1em * \kvtcb@raster@columns \relax,
-% nobeforeafter,
-% raster column skip = 0.5em,
-% /utils/exec = {%
-% \pgfkeysalsofrom{/tcb/raster equal height = \boxing@EqualHeight}%
-% },
-% ]
-% \loopthroughitemswithcommand{\TCB}%
-% }{%
-% \end{tcbraster}%
-% \endgroup%
-% }
-%
-% \NewDocumentEnvironment{plainbox}{ O{} +b }{%
-% \begingroup%
-% \gatheritems{#2}%
-% %! formatter = off
-% \boxingset{continued = false}
-% \pgfkeys{%
-% /boxing/.cd,
-% #1
-% }%
-% \ifboxing@Continued\else
-% \ResetPalette{Colored Coolers}%
-% \setcounter{CurrentItemNumber}{1}%
-% \fi
-% %! formatter = on
-% \begin{tcbraster}[
-% raster columns = \boxing@Colums,
-% raster halign = center,
-% raster right skip = \dimexpr 1em * \kvtcb@raster@columns \relax,
-% nobeforeafter,
-% raster column skip = 0.5em,
-% raster row skip = \boxing@RowSkip,% \dimexpr \boxing@RowSkip - 12pt \relax,
-% raster equal height = \boxing@EqualHeight,
-% %        /utils/exec = {%
-% %        \pgfkeysalsofrom{/tcb/raster equal height = \boxing@EqualHeight}%
-% %        },
-% ]
-% \loopthroughitemswithcommand{\TCBsimple}%
-% }{%
-% \end{tcbraster}%
-% \endgroup%
-% }
+\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
+    \begingroup%
+    \PLTGatherItems{#2}%
+    \PLTResetLoop%
+    \defcounter{plt@BoxNumber}{0}
+    \tcbset{plt@@single item/.style = {#1}}%
+    \PLTMapInline{%
+        \stepcounter{plt@BoxNumber}
+        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
+        \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
+        \PLTNextColor%
+    }
+    }{%
+    \endgroup
+}
 
 
 \endinput
