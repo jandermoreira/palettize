@@ -23,10 +23,53 @@
     \boolfalse{plt@UsingBeamer}
 }
 
-\newlength{\ds@RasterWidth}
-\setlength{\ds@RasterWidth}{\linewidth}
+% Keys
+\pgfkeys{
+    palettize boxes/.cd,
+%%
+%    itemize/.code = {%
+%        \tcbset{raster every box/.style = {itemize}}%
+%        \csdef{plt@BoxWidthFix}{\plt@BoxWidthFixitemize}%
+%    },
+%    enumerate/.code = {%
+%        \tcbset{raster every box/.style = {enumerate}}%
+%        \csdef{plt@BoxWidthFix}{\plt@BoxWidthFixenumerate}%
+%    },
+%
+    box style/.code = {%
+        \tcbset{raster every box/.append style = {#1}}%
+    },
+    raster style/.code = {%
+        \tcbset{raster options/.append style = {#1}}%
+    },
+%
+    .unknown/.code = {%
+        \csedef{plt@local@BoxStyle}{
+            /tcb/raster every box/.style = {\pgfkeyscurrentname}
+        }%
+        \pgfkeysalsofrom{\plt@local@BoxStyle}%
+    }
+}
+
+\NewDocumentCommand{\PLTBoxSet}{ >{ \TrimSpaces } m }{%
+    \pgfkeys{palettize boxes/.cd, #1}%
+}
+
 
 % Styles
+
+\newlength{\plt@RasterWidth}
+\setlength{\plt@RasterWidth}{\linewidth}
+\tcbset{
+    box width fix/.code 2 args = {%
+        \csdef{plt@BoxWidthFix#1}{#2}%
+    },
+    raster width fix/.code = {%
+        \setlength{\plt@RasterWidth}{\dimexpr \kvtcb@raster@width - (\plt@BoxWidthFix) * \kvtcb@raster@columns}%
+        \pgfkeysalso{raster width = \plt@RasterWidth}%
+    },
+}
+
 
 \tcbset{
 % boxes
@@ -50,11 +93,11 @@
         fontlower = \sffamily\color{PLTFGColor},
         fonttitle = \sffamily\color{PLTFGColor!10},
     },%
-    itemize width fix/.code = {\setlength{\ds@RasterWidth}{\dimexpr \kvtcb@raster@width}},
     enumerate/.style = {
         itemize,
         enlarge top by = 1em,
         enlarge left by = 1em,
+        add to width = -1em,
         lefttitle = 0.8em,
         overlay = {
             \coordinate (North West) at ($(frame.north west) + (0.05em, -0.05em)$);
@@ -64,7 +107,6 @@
             \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\theplt@BoxNumber};
         },
     },
-    enumerate width fix/.code = {\setlength{\ds@RasterWidth}{\dimexpr \kvtcb@raster@width - (1em + 1pt) * \kvtcb@raster@columns}},
     red box/.style = {
         left = 0.25em,
         right = 0.25em,
@@ -83,17 +125,18 @@
     },
 %
 % grids
-    grid plain/.style = {
+    raster options/.style = {
         nobeforeafter,
         raster columns = 3,
         raster equal height = rows,
         raster valign = top,
+        raster force size = false,
     },
-    grid enumerate default/.style = {
-        grid plain,
-        raster column skip = 1.2em,
-        raster left skip = 1em,
-    },
+%grid enumerate default/.style = {
+%    raster options,
+%    raster column skip = 1.2em,
+%    raster left skip = 1em,
+%},
 }
 
 % Variables
@@ -122,18 +165,19 @@
     }%
 }
 
-\NewDocumentEnvironment{PLTBoxRaster}{ O{itemize} D<>{} +b }{%
+\NewDocumentEnvironment{PLTBoxRaster}{ O{} +b }{%
     \begingroup%
-    \PLTGatherItems{#3}%
+    \PLTGatherItems{#2}%
     \PLTResetLoop%
     \tcbset{plt@@single item/.style = {}}%
     \defcounter{plt@BoxNumber}{0}%
+    \PLTBoxSet{
+        itemize, % default
+        #1,
+    }%
     \begin{tcbraster}[
-        grid plain,
-        raster every box/.style = {#1},
-        #2,
-        #1 width fix,
-        raster width = \ds@RasterWidth,
+        raster options,
+    %raster width fix,
     ]
         \PLTMapInline{%
             \stepcounter{plt@BoxNumber}%
@@ -160,21 +204,21 @@
 %    \end{PLTBoxRaster}
 %}
 
-\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
-    \begingroup%
-    \PLTGatherItems{#2}%
-    \PLTResetLoop%
-    \defcounter{plt@BoxNumber}{0}
-    \tcbset{plt@@single item/.style = {#1}}%
-    \PLTMapInline{%
-        \stepcounter{plt@BoxNumber}
-        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
-        \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
-        \PLTNextColor%
-    }
-    }{%
-    \endgroup
-}
+%\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
+%    \begingroup%
+%    \PLTGatherItems{#2}%
+%    \PLTResetLoop%
+%    \defcounter{plt@BoxNumber}{0}
+%    \tcbset{plt@@single item/.style = {#1}}%
+%    \PLTMapInline{%
+%        \stepcounter{plt@BoxNumber}
+%        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
+%        \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
+%        \PLTNextColor%
+%    }
+%    }{%
+%    \endgroup
+%}
 
 
 \endinput
