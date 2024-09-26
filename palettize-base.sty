@@ -6,6 +6,16 @@
 \ProvidesPackage{palettize-base}[2024/07/26 v0.1 Provides tools to create color palettes.]
 
 
+\pgfkeys{
+    palettize/.cd,
+    palette/.code = {\PLTUsePalette{#1}},
+}
+
+\NewDocumentCommand{\PLTSet}{ >{ \TrimSpaces } m }{%
+    \pgfkeys{palettize/.cd, #1}%
+}
+
+
 \RequirePackage{xcolor}
 
 % Code
@@ -80,7 +90,7 @@
 }
 \NewDocumentCommand{\PLTUsePalette}{ m }{
     \use_palette:n { #1 }
-    \PLTUseCurrentColor[#1]
+    \PLTUseCurrentColor
 }
 
 
@@ -113,11 +123,11 @@
     }
 }
 
-% set_fg_bg: separates foreground and background color (either single or pair)
-% #1: color specification
-\NewDocumentCommand{\LPTUsePalette}{ m }{
-    \select_current_color:n
-}
+%% set_fg_bg: separates foreground and background color (either single or pair)
+%% #1: color specification
+%\NewDocumentCommand{\LPTUsePalette}{ m }{
+%    \select_current_color:n
+%}
 
 
 % PLTFGColorName: gets current foreground color
