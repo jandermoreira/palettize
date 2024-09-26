@@ -7,9 +7,15 @@
 
 \input{palettize-options}
 
+\ifbool{plt@HandwritingSupport}{
+    \RequirePackage{emerald}
+    \RequirePackage[T1]{fontenc}
+}{}
+
+\RequirePackage{varwidth}
 \RequirePackage{tcolorbox}
 \tcbuselibrary{raster, skins}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, decorations.pathmorphing}
 
 \RequirePackage{palettize-base}
 \RequirePackage{palettize-getitems}
@@ -25,24 +31,51 @@
 
 % Keys
 \pgfkeys{
-    palettize boxes/.cd,
-%%
-%    itemize/.code = {%
-%        \tcbset{raster every box/.style = {itemize}}%
-%        \csdef{plt@BoxWidthFix}{\plt@BoxWidthFixitemize}%
-%    },
-%    enumerate/.code = {%
-%        \tcbset{raster every box/.style = {enumerate}}%
-%        \csdef{plt@BoxWidthFix}{\plt@BoxWidthFixenumerate}%
-%    },
+    palettize/.cd,
 %
-    box style/.code = {%
+    box set/.code = {%
+        \tcbset{raster every box/.style = {#1}}%
+    },
+    box/.code = {%
         \tcbset{raster every box/.append style = {#1}}%
     },
-    raster style/.code = {%
-        \tcbset{raster options/.append style = {#1}}%
+    raster set/.code = {%
+        \tcbset{raster base style/.style = {#1}}%
+    },
+    raster/.code = {%
+        \tcbset{raster base style/.append style = {#1}}%
     },
 %
+    alph/.code = {\csdef{PLTCounterStyle}{\alph}},
+    Alph/.code = {\csdef{PLTCounterStyle}{\Alph}},
+    arabic/.code = {\csdef{PLTCounterStyle}{\arabic}},
+    fnsymbol/.code = {\csdef{PLTCounterStyle}{\fnsymbol}},
+    roman/.code = {\csdef{PLTCounterStyle}{\roman}},
+    Roman/.code = {\csdef{PLTCounterStyle}{\Roman}},
+%
+% raster shortcuts
+    columns/.code = {%
+        \pgfkeysalso{raster = {raster columns = #1}}%
+    },
+    equal height/.code = {%
+        \pgfkeysalso{raster = {raster equal height = #1}}%
+    },
+    raster valign/.code = {%
+        \pgfkeysalso{raster = {raster valign = #1}}%
+    },
+    raster halign/.code = {%
+        \pgfkeysalso{raster = {raster halign = #1}}%
+    },
+%
+% color box shortcuts
+    box valign/.code = {%
+        \pgfkeysalso{box = {valign = #1}}%
+    },
+    box halign/.code = {%
+        \pgfkeysalso{box = {halign = #1}}%
+    },
+%
+% any style is handled here
     .unknown/.code = {%
         \csedef{plt@local@BoxStyle}{
             /tcb/raster every box/.style = {\pgfkeyscurrentname}
@@ -51,25 +84,17 @@
     }
 }
 
-\NewDocumentCommand{\PLTBoxSet}{ >{ \TrimSpaces } m }{%
-    \pgfkeys{palettize boxes/.cd, #1}%
+\tikzset{
+    hand drawing/.style = {
+        %very thick,
+        decorate,
+        decoration = {
+            random steps,
+            segment length = 3pt,
+            amplitude = 0.3pt,
+        },
+    }
 }
-
-
-% Styles
-
-\newlength{\plt@RasterWidth}
-\setlength{\plt@RasterWidth}{\linewidth}
-\tcbset{
-    box width fix/.code 2 args = {%
-        \csdef{plt@BoxWidthFix#1}{#2}%
-    },
-    raster width fix/.code = {%
-        \setlength{\plt@RasterWidth}{\dimexpr \kvtcb@raster@width - (\plt@BoxWidthFix) * \kvtcb@raster@columns}%
-        \pgfkeysalso{raster width = \plt@RasterWidth}%
-    },
-}
-
 
 \tcbset{
 % boxes
@@ -83,16 +108,17 @@
         colframe = PLTBGColor!40!black,
         interior style={
             top color = PLTBGColor!90!black,
-            bottom color = PLTBGColor!95,
+            bottom color = PLTBGColor!80,
         },
         valign = top,
         halign = flush left,
         halign lower = flush left,
+        halign title = flush left,
         rounded corners,
         fontupper = \sffamily\color{PLTFGColor},
         fontlower = \sffamily\color{PLTFGColor},
         fonttitle = \sffamily\color{PLTFGColor!10},
-    },%
+    },
     enumerate/.style = {
         itemize,
         enlarge top by = 1em,
@@ -104,48 +130,114 @@
             \path [fill = PLTBGColor!40!black] (North West) circle (1em);
             \path [thick, draw = PLTBGColor] (North West) circle (0.9em);
             \path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\theplt@BoxNumber};
+            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\PLTCounterStyle{tcbrasternum}};
         },
     },
-    red box/.style = {
-        left = 0.25em,
-        right = 0.25em,
-        top = 0.5em,
-        bottom = 0.5em,
-        boxrule = 0.1em,
-        colframe = red,
-        colback = red!5,
-        valign = top,
+    handwritten/.style = {
+        itemize,
+        halign title = flush left,
+        opacityframe = 0,
+        opacityback = 0,
+        fontupper = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!50!black},
+        fontlower = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!50!black},
+        fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!30!black},
+        overlay = {
+                \path[
+                    hand drawing,
+                    ultra thick,
+                    draw = none,
+                    fill = black,
+                    opacity = 0.3,
+                ] ($(interior.north east) + (0.2em, -0.2em)$) -- ($(interior.south east) + (0.2em, -0.2em)$) -- ($(interior.south west) + (0.2em, -0.2em)$) -- ($(interior.north west) + (0.2em, -0.2em)$) -- cycle;
+            \path[
+                hand drawing,
+                %draw = PLTBGColor!75!black,
+                fill = PLTBGColor!15,
+            ] (interior.north east) -- (interior.south east) -- (interior.south west) -- (interior.north west) -- cycle;
+        },
+    },
+    day/.style = {
+        enhanced,
+        size = small,
+        fontupper = \sffamily\color{PLTOuterFGColor},
+        fontlower = \sffamily\color{PLTOuterBGColor},
+        fonttitle = \ttfamily\color{PLTOuterFGColor},
+        opacityframe = 0,
+        opacityback = 0,
+        valign = center,
         halign = flush left,
-        halign lower = flush left,
-        rounded corners,
-        fontupper = \sffamily\color{.},
-        fontlower = \sffamily,
-        fonttitle = \sffamily,
+        enlarge left by = 1em,
+        add to width = -1em,
+        left = 1em,
+        right = 0em,
+        top = 0em,
+        bottom = 0.2em,
+        detach title,
+        overlay = {
+            \begin{scope}[shift = (interior.west)]
+                %\draw[PLTOuterFGColor!70, very thin] (0, 0) circle (1em);
+                \foreach \line in {1, ..., 8}{
+                    \pgfmathsetmacro{\length}{145 - 90 * rnd}
+                    \pgfmathsetmacro{\thickness}{0.15 - 0.1 * rnd}
+                    \pgfmathsetmacro{\rotation}{360 * rnd}
+                    \pgfmathsetmacro{\radius}{1 - 0.5 * \thickness}
+                    \pgfmathsetmacro{\mix}{100 - 80 * rnd}
+                    \draw [
+                        PLTOuterFGColor!\mix!PLTOuterBGColor,
+                        line width = \thickness * 1em,
+                        radius = \radius * 1em,
+                        line cap = round, rotate = \rotation,
+                        opacity = 0.7,
+                    ] ($(\radius * 1em, 0)$) arc[start angle=0, end angle=\length] (0: 1em);
+                }
+                \node[align = center] at (interior.west) {\tcbtitle};
+            \end{scope}
+        },
     },
-%
-% grids
-    raster options/.style = {
-        nobeforeafter,
-        raster columns = 3,
-        raster equal height = rows,
-        raster valign = top,
-        raster force size = false,
+    month/.style = {
+        itemize,
+        fonttitle = \scshape\color{PLTBGColor!10},
+        boxrule = 0pt,
+        halign title = center,
+        interior style = {
+            top color = PLTBGColor!90,
+            bottom color = PLTBGColor!60,
+        },
+        valign = top,
+        sharp corners,
+        rounded corners = south,
+        drop fuzzy shadow southeast = PLTBGColor!50!black,
     },
-%grid enumerate default/.style = {
-%    raster options,
-%    raster column skip = 1.2em,
-%    raster left skip = 1em,
-%},
 }
 
+\PLTSet{
+    day schedule/.style = {day, columns = 1},
+    month schedule/.style = {month, columns = 4},
+}
+
+
+% Defaults
+\PLTSet{
+    itemize,
+    arabic,
+    raster set = {
+        nobeforeafter,
+        raster force size = false,
+    },
+    columns = 3,
+    equal height = rows,
+    raster valign = top,
+    raster halign = center,
+}
+
+
 % Variables
-\newcounter{plt@BoxNumber}
+\newcounter{PLTBoxNumber}
 
 % Code
 \NewDocumentCommand{\plt@ShowColorBox}{ +m }{%
     \begin{tcolorbox}[plt@@single item]
-        #1
+        #1%
     \end{tcolorbox}%
 }
 \NewDocumentCommand{\plt@ShowItem}{ m m m +m m }{%
@@ -166,43 +258,28 @@
 }
 
 \NewDocumentEnvironment{PLTBoxRaster}{ O{} +b }{%
+    \noindent%
     \begingroup%
     \PLTGatherItems{#2}%
+    \colorlet{PLTOuterFGColor}{PLTFGColor}%
+    \colorlet{PLTOuterBGColor}{PLTBGColor}%
     \PLTResetLoop%
-    \tcbset{plt@@single item/.style = {}}%
-    \defcounter{plt@BoxNumber}{0}%
-    \PLTBoxSet{
-        itemize, % default
-        #1,
-    }%
-    \begin{tcbraster}[
-        raster options,
-    %raster width fix,
-    ]
-        \PLTMapInline{%
-            \stepcounter{plt@BoxNumber}%
-            \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
-            \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
-            \PLTNextColor%
-        }%
-    \end{tcbraster}%
+    \defcounter{PLTBoxNumber}{0}%
+    \PLTSet{#1}%
+    \begin{varwidth}{\linewidth}%
+        \begin{tcbraster}[raster base style]
+            \PLTMapInline{%
+                \stepcounter{PLTBoxNumber}%
+                \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
+                \tcbset{plt@@single item/.style = {}}%
+                \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
+                \PLTNextColor%
+            }%
+        \end{tcbraster}%
+    \end{varwidth}%
     \endgroup%
     }{%
 }
-
-%\NewDocumentEnvironment{PLTBoxEnumerate}{ O{} D<>{} }{%
-%    \begin{PLTBoxRaster}[enumerate, #1]
-%        <grid enumerate default, #2>
-%            }{
-%    \end{PLTBoxRaster}
-%}
-%
-%\NewDocumentEnvironment{PLTBoxItemize}{ O{} D<>{} }{%
-%    \begin{PLTBoxRaster}[itemize, #1]
-%        <grid enumerate default, #2>
-%            }{
-%    \end{PLTBoxRaster}
-%}
 
 %\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
 %    \begingroup%
