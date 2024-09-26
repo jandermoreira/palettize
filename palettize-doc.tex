@@ -752,15 +752,17 @@ New styles can be defined.
 
 \noindent\textbf{Handwriting}
 
-
 \begin{example}{}
-    \begin{PLTBoxRaster}[handwritten, palette = toasted-peach]
+    My first list:\\
+    \begin{PLTBoxRaster}[handwriting, palette = toasted-peach]
         \item One
         \item Two
         \item Three
     \end{PLTBoxRaster}
 
-    \begin{PLTBoxRaster}[handwritten, palette = sting-has-sprung]
+    \bigskip
+    My second list:\\
+    \begin{PLTBoxRaster}[handwriting, palette = sting-has-sprung]
         \item [First] One
         \item [Second] Two
         \item [Third] Three
@@ -771,26 +773,24 @@ New styles can be defined.
 
 \begin{example}{}
     \PLTUsePalette{toasted-peach}
-    \PLTSet{columns = 1}
-    \begin{PLTBoxRaster}[month schedule, columns = 4]
+    \begin{PLTBoxRaster}[month schedule]
         \item [April]
         \begin{PLTBoxRaster}[day schedule]
-            \item [9] First meeting
-            \item [12] Scheduled visit
-            \item [21] Vacation
+            \item [9] First meeting\\\&\\Welcome party
+            \item [21] Second meeting
         \end{PLTBoxRaster}
         \item [July]
         \begin{PLTBoxRaster}[day schedule]
-            \item [3] Road trip
-            \item [27] Home coming
+            \item [3] Staff meeting
+            \item [27] Third meeting
         \end{PLTBoxRaster}
         \item [October]
         \begin{PLTBoxRaster}[day schedule]
             \item [8] Final meeting
         \end{PLTBoxRaster}
         \item [December]
-        \begin{PLTBoxRaster}[day schedule, columns = 1]
-            \item [11] Gala ball
+        \begin{PLTBoxRaster}[day schedule]
+            \item [11] Party
             \item [25] Christmas
         \end{PLTBoxRaster}
     \end{PLTBoxRaster}
