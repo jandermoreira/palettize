@@ -10,12 +10,14 @@
 
 \providebool{plt@LoadAllPalettes}
 
+\providebool{plt@HandwritingSupport}
+
 \providebool{plt@KeepEnumerate}
 \providebool{plt@KeepItemize}
 \providebool{plt@KeepDescription}
 
 \pgfkeys{
-    /palettize/.cd,
+    /palettize package/.cd,
 %
 % Packages
     itemizer/.is if = plt@LoadItemizer,
@@ -32,8 +34,11 @@
     keep-description/.is if = plt@KeepDescription,
     keep-all/.style = {keep-enumerate, keep-itemize, keep-description},
 %
+% handwriting
+    handwriting/.is if = plt@HandwritingSupport,
+%
 % Otherwise
     .unknown/.code = {\PackageError{palettize}{Unknown option: \pgfkeyscurrentname}},
 }
 
-\ProcessPgfOptions{palettize}
+\ProcessPgfOptions{palettize package}

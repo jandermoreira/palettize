@@ -12,7 +12,7 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
-\usepackage[all, all-palettes]{palettize}
+\usepackage[all, all-palettes, handwriting]{palettize}
 
 
 %% Layout
@@ -65,12 +65,12 @@
         autogobble,
     },
     listing engine = minted,
-    %extras middle and last = {
-    %%    %\coordinate (A1) at ($(interior.south east) + (-10pt,5pt)$);
-    %%    %\coordinate (C1) at ($(interior.south east) + (-6pt,7.5pt)$);
-    %%    %\draw[fill=blue] (A1) -- +(0,5pt) -- (C1) -- cycle;
-    %    \draw[dashed, gray] (interior.south west) -- (interior.south east);
-    %},
+%extras middle and last = {
+%%    %\coordinate (A1) at ($(interior.south east) + (-10pt,5pt)$);
+%%    %\coordinate (C1) at ($(interior.south east) + (-6pt,7.5pt)$);
+%%    %\draw[fill=blue] (A1) -- +(0,5pt) -- (C1) -- cycle;
+%    \draw[dashed, gray] (interior.south west) -- (interior.south east);
+%},
     #1
 }
 
@@ -547,6 +547,7 @@ A simple mechanism is provided to access the list of palettes and the colors ins
     }
 \end{example}
 
+
 \section{Modules}
 
 This sections describes the modules in detail.
@@ -557,7 +558,20 @@ Boxes are just the \textit{raster array} from \PackageName{tcolorbox} with suppo
 
 The intent here is to provide an easier way to get things done.
 
-The environment \latexinline{PLTBoxRaster} is used to create a box for ecah item in a list. The current palette is used to choose the colors used in each box.
+The \PackageName{palettize-boxes} provides a single option: \OptionRef{handwriting}.
+
+\begin{option}{handwriting}{}
+    The option \Option{hanwriting} loads Emerald fonts.
+
+     font JD\footnotemark.
+
+    is specified, as seen in \Cref{sec:box-styles}.
+
+    Handwritten boxes requires
+\end{option}
+\footnotetext{\url{https://ctan.org/pkg/emerald}; \url{https://tug.org/FontCatalogue/jd/}.}
+
+The environment \latexinline{PLTBoxRaster} is used to create a box for each item in a list. The current palette is used to choose the colors used in each box.
 
 \begin{example}{}
     This is a boxed list with the current (default) palette:
@@ -595,10 +609,21 @@ Since boxes are rendered using \PackageName{tcolorbox}'s raster, the new environ
     \end{PLTBoxRaster}
 \end{example}
 
-Numbered boxes are created using the \latexinline{PLTBoxRaster} environment.
+Numbered boxes are created using the option \OptionInd{enumerate}.
 
 \begin{example}{}
     \begin{PLTBoxRaster}[enumerate]
+        \item[Software] Computer programs that instruct the execution of a computer.
+        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+        \item[Firmware] Software that provides low-level control of computing device hardware.
+        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{PLTBoxRaster}
+\end{example}
+
+The numbering style can be set with \OptionInd{arabic} for regular arabic numbers (default), \OptionInd{alph} for lowercase letter, \OptionInd{Alph} for uppercase letter, \OptionInd{roman} for lower case roman numbers, \OptionInd{Roman} for roman upper case, or \OptionInd{fnsymbol} for footnote-like symbols.
+
+\begin{example}{}
+    \begin{PLTBoxRaster}[enumerate, Roman]
         \item[Software] Computer programs that instruct the execution of a computer.
         \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
         \item[Firmware] Software that provides low-level control of computing device hardware.
@@ -612,14 +637,163 @@ The boxes colors depend on the current palette.
     \PLTUseResource{toasted-peach}
     \PLTUsePalette{toasted-peach}
     \begin{tcolorbox}[colback = black]
-        \begin{PLTBoxRaster}[enumerate]
-            <raster columns = 2>
+        \begin{PLTBoxRaster}[enumerate, fnsymbol]
             \item[Software] Computer programs that instruct the execution of a computer.
             \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
             \item[Firmware] Software that provides low-level control of computing device hardware.
             \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
         \end{PLTBoxRaster}
     \end{tcolorbox}
+\end{example}
+
+\subsubsection*{Box styles}
+
+By default, boxes use a preset style called \OptionInd{itemize}, which can be specified as an optional argument to \latexinline{PLTBoxRaster} environments. As seen in previous examples, \OptionInd{enumerate} provides a box style with numbering.
+
+\begin{example}{}
+    \begin{tcbraster}
+        \begin{tcolorbox}
+            \begin{PLTBoxRaster}[
+                itemize,
+                raster = {raster columns = 2}
+            ]
+                \item One
+                \item Two
+                \item Three
+                \item Four
+            \end{PLTBoxRaster}
+        \end{tcolorbox}
+        \begin{tcolorbox}
+            \begin{PLTBoxRaster}[
+                enumerate, Roman,
+                raster = {raster columns = 2}
+            ]
+                \item One
+                \item Two
+                \item Three
+                \item Four
+            \end{PLTBoxRaster}
+        \end{tcolorbox}
+    \end{tcbraster}
+\end{example}
+
+\subsubsection*{Using \PackageName{tcolorbox}'s resources}
+
+Options to the \latexinline{tcbraster} environment can be added with option \OptionInd{raster}.
+
+\begin{example}{}
+    \PLTUseResource{toasted-peach}
+    \PLTUsePalette{toasted-peach}
+    \begin{tcolorbox}[colback = black]
+        \begin{PLTBoxRaster}[raster = {raster equal height = none, raster valign = top, raster columns = 4}]
+            \item[Software] Computer programs that instruct the execution of a computer.
+            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+            \item[Firmware] Software that provides low-level control of computing device hardware.
+            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+        \end{PLTBoxRaster}
+    \end{tcolorbox}
+\end{example}
+
+When using \OptionInd{raster set} all \PackageName{palettize-boxes}' default options are replaced, allowing full control.
+
+\begin{example}{}
+    \PLTUseResource{sting-has-sprung}
+    \PLTUsePalette{sting-has-sprung}
+    \begin{PLTBoxRaster}[raster set = {}]  % ignore palettize-boxes' presets
+        \item[Software] Computer programs that instruct the execution of a computer.
+        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+        \item[Firmware] Software that provides low-level control of computing device hardware.
+        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{PLTBoxRaster}
+\end{example}
+
+The options \OptionInd{box} and \OptionInd{box set} work in the same way for all boxes.
+
+\begin{example}{}
+    \begin{PLTBoxRaster}[box = {boxrule = 0pt, halign = center, sharp corners}]
+        \item[Software] Computer programs that instruct the execution of a computer.
+        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+        \item[Firmware] Software that provides low-level control of computing device hardware.
+        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+    \end{PLTBoxRaster}
+\end{example}
+
+New styles can be defined.
+
+\begin{example}{}
+    \tcbset{
+        my item/.style = {
+            colframe = PLTBGColor,
+            enhanced,
+            interior style={
+                left color = PLTBGColor!80,
+                right color = PLTBGColor!60,
+            },
+            valign = center,
+            fontupper = \sffamily\color{PLTFGColor}\scshape\large,
+            fonttitle = \ttfamily\color{PLTFGColor!10},
+            title = {Item \#\PLTCounterStyle{tcbrasternum}},
+            rotate = 10,
+            lifted shadow = {1mm}{-2mm}{3mm}{0.1mm}{black!50!white},
+            sharp corners,
+            rounded corners = east,
+        },
+    }
+
+    \begin{PLTBoxRaster}[my item, raster = {raster width = 0.8\linewidth}]
+        \item One
+        \item Two
+        \item Three
+    \end{PLTBoxRaster}
+\end{example}
+
+
+\subsubsection{Available box styles}\label{sec:box-styles}
+
+\noindent\textbf{Handwriting}
+
+
+\begin{example}{}
+    \begin{PLTBoxRaster}[handwritten, palette = toasted-peach]
+        \item One
+        \item Two
+        \item Three
+    \end{PLTBoxRaster}
+
+    \begin{PLTBoxRaster}[handwritten, palette = sting-has-sprung]
+        \item [First] One
+        \item [Second] Two
+        \item [Third] Three
+    \end{PLTBoxRaster}
+\end{example}
+
+\noindent\textbf{Schedule}
+
+\begin{example}{}
+    \PLTUsePalette{toasted-peach}
+    \PLTSet{columns = 1}
+    \begin{PLTBoxRaster}[month schedule, columns = 4]
+        \item [April]
+        \begin{PLTBoxRaster}[day schedule]
+            \item [9] First meeting
+            \item [12] Scheduled visit
+            \item [21] Vacation
+        \end{PLTBoxRaster}
+        \item [July]
+        \begin{PLTBoxRaster}[day schedule]
+            \item [3] Road trip
+            \item [27] Home coming
+        \end{PLTBoxRaster}
+        \item [October]
+        \begin{PLTBoxRaster}[day schedule]
+            \item [8] Final meeting
+        \end{PLTBoxRaster}
+        \item [December]
+        \begin{PLTBoxRaster}[day schedule, columns = 1]
+            \item [11] Gala ball
+            \item [25] Christmas
+        \end{PLTBoxRaster}
+    \end{PLTBoxRaster}
 \end{example}
 
 \subsection{Lists}\label{sec:itemizer}
@@ -760,6 +934,7 @@ Double-named versions are always created, even if \Option{keep-\Argument{list~na
 
 The module \PackageName{palettize-itemizer} appears to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testing has been performed.
 
+
 \section{Beamer}
 
 So far, everything seems to work fine with Beamer, as long as the slide overlays remain simple.
@@ -774,6 +949,7 @@ Support for using this package with the Beamer class is in its early stages and 
 %        \item[] Foreground color changes inside boxes using \Macro{color} or \Macro{textcolor} are bounded by the limitations described in the documentation of \PackageName{xcolor} (Section~2.6.4, \PackageName{xcolor} v2.14, 2022/06/12).
 %    \end{descriptiondescription}
 %\end{center}
+
 
 \section{Wish list}
 
