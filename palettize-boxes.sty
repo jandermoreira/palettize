@@ -33,25 +33,39 @@
 \pgfkeys{
     palettize/.cd,
 %
-    box set/.code = {%
-        \tcbset{raster every box/.style = {#1}}%
-    },
-    box/.code = {%
-        \tcbset{raster every box/.append style = {#1}}%
-    },
-    raster set/.code = {%
-        \tcbset{raster base style/.style = {#1}}%
-    },
-    raster/.code = {%
-        \tcbset{raster base style/.append style = {#1}}%
-    },
-%
+% numbering
     alph/.code = {\csdef{PLTCounterStyle}{\alph}},
     Alph/.code = {\csdef{PLTCounterStyle}{\Alph}},
     arabic/.code = {\csdef{PLTCounterStyle}{\arabic}},
     fnsymbol/.code = {\csdef{PLTCounterStyle}{\fnsymbol}},
     roman/.code = {\csdef{PLTCounterStyle}{\roman}},
     Roman/.code = {\csdef{PLTCounterStyle}{\Roman}},
+%
+%
+    remember/.code = {%
+        \csdef{plt@ContextName}{#1}%
+        \booltrue{plt@RememberContext}%
+    },
+    continue/.code = {%
+        \csdef{plt@ContextName}{#1}%
+        \booltrue{plt@ContinueContext}%
+    },
+%
+% box options
+    box set/.code = {%
+        \tcbset{raster every box/.style = {#1}}%
+    },
+    box/.code = {%
+        \tcbset{raster every box/.append style = {#1}}%
+    },
+%
+% raster options
+    raster set/.code = {%
+        \tcbset{raster base style/.style = {#1}}%
+    },
+    raster/.code = {%
+        \tcbset{raster base style/.append style = {#1}}%
+    },
 %
 % raster shortcuts
     columns/.code = {%
@@ -81,18 +95,6 @@
             /tcb/raster every box/.style = {\pgfkeyscurrentname}
         }%
         \pgfkeysalsofrom{\plt@local@BoxStyle}%
-    }
-}
-
-\tikzset{
-    hand drawing/.style = {
-        %very thick,
-        decorate,
-        decoration = {
-            random steps,
-            segment length = 3pt,
-            amplitude = 0.3pt,
-        },
     }
 }
 
@@ -133,7 +135,7 @@
             \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\PLTCounterStyle{tcbrasternum}};
         },
     },
-    handwritten/.style = {
+    handwriting/.style = {
         itemize,
         halign title = flush left,
         opacityframe = 0,
@@ -142,16 +144,25 @@
         fontlower = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!50!black},
         fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!30!black},
         overlay = {
-                \path[
-                    hand drawing,
-                    ultra thick,
-                    draw = none,
-                    fill = black,
-                    opacity = 0.3,
-                ] ($(interior.north east) + (0.2em, -0.2em)$) -- ($(interior.south east) + (0.2em, -0.2em)$) -- ($(interior.south west) + (0.2em, -0.2em)$) -- ($(interior.north west) + (0.2em, -0.2em)$) -- cycle;
             \path[
-                hand drawing,
-                %draw = PLTBGColor!75!black,
+                decorate,
+                decoration = {
+                    random steps,
+                    segment length = 3pt,
+                    amplitude = 0.3pt,
+                },
+                ultra thick,
+                draw = none,
+                fill = black,
+                opacity = 0.3,
+            ] ($(interior.north east) + (0.2em, -0.2em)$) -- ($(interior.south east) + (0.2em, -0.2em)$) -- ($(interior.south west) + (0.2em, -0.2em)$) -- ($(interior.north west) + (0.2em, -0.2em)$) -- cycle;
+            \path[
+                decorate,
+                decoration = {
+                    random steps,
+                    segment length = 3pt,
+                    amplitude = 0.3pt,
+                },
                 fill = PLTBGColor!15,
             ] (interior.north east) -- (interior.south east) -- (interior.south west) -- (interior.north west) -- cycle;
         },
@@ -169,8 +180,8 @@
         enlarge left by = 1em,
         add to width = -1em,
         left = 1em,
-        right = 0em,
-        top = 0em,
+        right = 0.25em,
+        top = 0.25em,
         bottom = 0.2em,
         detach title,
         overlay = {
@@ -215,24 +226,29 @@
     month schedule/.style = {month, columns = 4},
 }
 
+% Variables
+%\newcounter{PLTBoxNumber}
+%\newcounter{plt@SaveBoxNumber}
+\newbool{plt@RememberContext}%
+\boolfalse{plt@RememberContext}%
+\newbool{plt@ContinueContext}%
+\boolfalse{plt@ContinueContext}%
 
 % Defaults
 \PLTSet{
     itemize,
     arabic,
     raster set = {
-        nobeforeafter,
+        %nobeforeafter,
         raster force size = false,
     },
     columns = 3,
     equal height = rows,
     raster valign = top,
     raster halign = center,
+    %continue = false,
 }
 
-
-% Variables
-\newcounter{PLTBoxNumber}
 
 % Code
 \NewDocumentCommand{\plt@ShowColorBox}{ +m }{%
@@ -264,18 +280,30 @@
     \colorlet{PLTOuterFGColor}{PLTFGColor}%
     \colorlet{PLTOuterBGColor}{PLTBGColor}%
     \PLTResetLoop%
-    \defcounter{PLTBoxNumber}{0}%
     \PLTSet{#1}%
     \begin{varwidth}{\linewidth}%
+        \vspace*{0.5em}%
         \begin{tcbraster}[raster base style]
+            \ifbool{plt@ContinueContext}{%
+                \defcounter{tcbrasternum}{\csuse{plt@ContextBoxNumber@\plt@ContextName}}%
+                \boolfalse{plt@ContinueContext}%
+                \booltrue{plt@RememberContext}%
+            }{}%
             \PLTMapInline{%
-                \stepcounter{PLTBoxNumber}%
+                %\stepcounter{PLTBoxNumber}%
+                %\defcounter{plt@SaveBoxNumber}{\thePLTBoxNumber}%
                 \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
                 \tcbset{plt@@single item/.style = {}}%
                 \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
+                %\defcounter{PLTBoxNumber}{\theplt@SaveBoxNumber + 2}%
                 \PLTNextColor%
             }%
+            \ifbool{plt@RememberContext}{%
+                \global\csedef{plt@ContextBoxNumber@\plt@ContextName}{\thetcbrasternum}
+                \boolfalse{plt@RememberContext}%
+            }{}
         \end{tcbraster}%
+        \vspace*{0.5em}%
     \end{varwidth}%
     \endgroup%
     }{%
