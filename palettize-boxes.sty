@@ -13,6 +13,7 @@
 }{}
 
 \RequirePackage{varwidth}
+\RequirePackage{relsize}
 \RequirePackage{tcolorbox}
 \tcbuselibrary{raster, skins}
 \usetikzlibrary{calc, decorations.pathmorphing}
@@ -32,6 +33,7 @@
 % Keys
 \pgfkeys{
     palettize/.cd,
+    dark/.is if = plt@DarkMode,
 %
 % numbering
     alph/.code = {\csdef{PLTCounterStyle}{\alph}},
@@ -43,20 +45,20 @@
 %
 %
     remember/.code = {%
-        \csdef{plt@ContextName}{#1}%
+        \csdef{plt@ContextName}{plt#1}%
         \booltrue{plt@RememberContext}%
     },
     continue/.code = {%
-        \csdef{plt@ContextName}{#1}%
+        \csdef{plt@ContextName}{plt#1}%
         \booltrue{plt@ContinueContext}%
     },
 %
 % box options
     box set/.code = {%
-        \tcbset{raster every box/.style = {#1}}%
+        \tcbset{default box/.style = {#1}}%
     },
     box/.code = {%
-        \tcbset{raster every box/.append style = {#1}}%
+        \tcbset{default box/.append style = {#1}}%
     },
 %
 % raster options
@@ -80,6 +82,9 @@
     raster halign/.code = {%
         \pgfkeysalso{raster = {raster halign = #1}}%
     },
+    width/.code = {%
+        \pgfkeysalso{raster = {raster width = #1}}%
+    },
 %
 % color box shortcuts
     box valign/.code = {%
@@ -91,15 +96,14 @@
 %
 % any style is handled here
     .unknown/.code = {%
-        \csedef{plt@local@BoxStyle}{
-            /tcb/raster every box/.style = {\pgfkeyscurrentname}
-        }%
-        \pgfkeysalsofrom{\plt@local@BoxStyle}%
-    }
+        \csedef{ptl@local@UnknownName}{box set = {\pgfkeyscurrentname}}%
+        \pgfkeysalsofrom{\ptl@local@UnknownName}%
+    },
 }
 
 \tcbset{
 % boxes
+    empty/.style = {},
     itemize/.style = {
         enhanced,
         left = 0.25em,
@@ -107,32 +111,32 @@
         top = 0.5em,
         bottom = 0.5em,
         boxrule = 0.1em,
-        colframe = PLTBGColor!40!black,
-        interior style={
-            top color = PLTBGColor!90!black,
-            bottom color = PLTBGColor!80,
+        colframe = PLTBoxFrameColor,
+        interior style = {
+            top color = PLTBoxFromBGColor,
+            bottom color = PLTBoxToBGColor,
         },
         valign = top,
         halign = flush left,
         halign lower = flush left,
         halign title = flush left,
         rounded corners,
-        fontupper = \sffamily\color{PLTFGColor},
-        fontlower = \sffamily\color{PLTFGColor},
-        fonttitle = \sffamily\color{PLTFGColor!10},
+        fontupper = \sffamily\color{PLTBoxFontUpperColor},
+        fontlower = \sffamily\color{PLTBoxFontLowerColor},
+        fonttitle = \sffamily\color{PLTBoxTitleColor},
     },
     enumerate/.style = {
         itemize,
         enlarge top by = 1em,
         enlarge left by = 1em,
         add to width = -1em,
-        lefttitle = 0.8em,
+        lefttitle = 0.6em,
         overlay = {
             \coordinate (North West) at ($(frame.north west) + (0.05em, -0.05em)$);
-            \path [fill = PLTBGColor!40!black] (North West) circle (1em);
-            \path [thick, draw = PLTBGColor] (North West) circle (0.9em);
-            \path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\PLTCounterStyle{tcbrasternum}};
+            \path [fill = PLTBoxFrameColor] (North West) circle (1em);
+            \path [thick, draw = PLTBoxTitleColor] ($(North West) + (0.9em, 0)$) arc (0:360:0.9em);
+            %\path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
+            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\textcolor{PLTBoxTitleColor}{\smaller\PLTCounterStyle{tcbrasternum}}};
         },
     },
     handwriting/.style = {
@@ -140,9 +144,9 @@
         halign title = flush left,
         opacityframe = 0,
         opacityback = 0,
-        fontupper = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!50!black},
-        fontlower = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!50!black},
-        fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBGColor!30!black},
+        fontupper = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxFGColor!30!black},
+        fontlower = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxFGColor!30!black},
+        fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxTitleColor},
         overlay = {
             \path[
                 decorate,
@@ -171,7 +175,7 @@
         enhanced,
         size = small,
         fontupper = \sffamily\color{PLTOuterFGColor},
-        fontlower = \sffamily\color{PLTOuterBGColor},
+        fontlower = \sffamily\color{PLTOuterFGColor},
         fonttitle = \ttfamily\color{PLTOuterFGColor},
         opacityframe = 0,
         opacityback = 0,
@@ -207,7 +211,7 @@
     },
     month/.style = {
         itemize,
-        fonttitle = \scshape\color{PLTBGColor!10},
+        fonttitle = \scshape\color{PLTFGColor!10},
         boxrule = 0pt,
         halign title = center,
         interior style = {
@@ -227,40 +231,43 @@
 }
 
 % Variables
-%\newcounter{PLTBoxNumber}
-%\newcounter{plt@SaveBoxNumber}
-\newbool{plt@RememberContext}%
-\boolfalse{plt@RememberContext}%
-\newbool{plt@ContinueContext}%
-\boolfalse{plt@ContinueContext}%
+\newbool{plt@RememberContext}
+\boolfalse{plt@RememberContext}
+\newbool{plt@ContinueContext}
+\boolfalse{plt@ContinueContext}
+\newbool{plt@DarkMode}
 
 % Defaults
 \PLTSet{
-    itemize,
+    box set = itemize,
     arabic,
-    raster set = {
-        %nobeforeafter,
-        raster force size = false,
-    },
+    raster set = {raster force size = false},
     columns = 3,
     equal height = rows,
     raster valign = top,
     raster halign = center,
-    %continue = false,
 }
 
 
 % Code
 \NewDocumentCommand{\plt@ShowColorBox}{ +m }{%
-    \begin{tcolorbox}[plt@@single item]
+    \begin{tcolorbox}[plt box \theplt@BoxLevel, plt single item]
         #1%
+        %
+        %\tcblower
+        %\raggedright{\small \textbf{Color} = \texttt{\PLTBGColorName}}\par
+        %\raggedright{\small \textbf{Remember} = \texttt{\ifbool{plt@RememberContext}{True}{False}}}\par
+        %\raggedright{\small \textbf{Continue} = \texttt{\ifbool{plt@ContinueContext}{True}{False}}}\par
+        %\seekey{default box}
+        %\seekey{plt box \theplt@BoxLevel}
+        %\seekey{plt raster \theplt@BoxLevel}
     \end{tcolorbox}%
 }
 \NewDocumentCommand{\plt@ShowItem}{ m m m +m m }{%
     \PLTIfType{#1}{B, AB}{%
-        \tcbset{plt@@single item/.append style = {squeezed title = {#3}}}%
+        \tcbset{plt single item/.append style = {squeezed title = {#3}}}%
     }{%
-        \tcbset{plt@@single item/.append style = {}}%
+        \tcbset{plt single item/.append style = {}}%
     }%
     \ifbool{plt@UsingBeamer}{%
         \PLTIfType{#1}{A, AB}{%
@@ -273,39 +280,78 @@
     }%
 }
 
+\NewDocumentCommand{\plt@RememberBoxContext}{ m }{%
+    \global\csedef{plt@Context@BoxNumber@#1}{\thetcbrasternum}%
+    \global\csletcs{plt@Context@NumberStyle@#1}{PLTCounterStyle}%
+    \plt@GetPaletteNameCS{plt@Context@PaletteName@#1}%
+    \plt@GetCurrentColorIndex{plt@Context@ColorIndex@#1}%
+}
+
+\NewDocumentCommand{\plt@ContinueBoxContext}{ m }{%
+    \defcounter{tcbrasternum}{\csuse{plt@Context@BoxNumber@#1}}%
+    \csletcs{PLTCounterStyle}{plt@Context@NumberStyle@#1}%
+    \PLTUsePalette{\csuse{plt@Context@PaletteName@#1}}%
+    \plt@SetCurrentColorIndex{\csuse{plt@Context@ColorIndex@#1}}%
+}
+
+\NewDocumentCommand{\seekey}{ m }{%
+    \raggedright\noindent{\footnotesize\textbf{#1}: \letcs{\jander}{pgfk@/tcb/#1/.@body}
+    \texttt{[[\expandafter\detokenize\expandafter{\jander}]]}}\par
+}
+
+\newbox\plt@RasterContainer
+\newcounter{plt@BoxLevel}
 \NewDocumentEnvironment{PLTBoxRaster}{ O{} +b }{%
     \noindent%
+    \stepcounter{plt@BoxLevel}%
     \begingroup%
     \PLTGatherItems{#2}%
     \colorlet{PLTOuterFGColor}{PLTFGColor}%
     \colorlet{PLTOuterBGColor}{PLTBGColor}%
     \PLTResetLoop%
+    \boolfalse{plt@RememberContext}%
+    \boolfalse{plt@ContinueContext}%
     \PLTSet{#1}%
-    \begin{varwidth}{\linewidth}%
+    \ifbool{plt@ContinueContext}{%
+        \tcbset{plt box \theplt@BoxLevel/.copy = plt context box \plt@ContextName}%
+        %\tcbset{plt raster \theplt@BoxLevel/.copy = plt context raster \plt@ContextName}%
+        \booltrue{plt@RememberContext}%
+    }{%
+        \tcbset{plt box \theplt@BoxLevel/.copy = default box}%
+        %\tcbset{plt raster \theplt@BoxLevel/.copy = raster base style}%
+    }%
+    \ifbool{plt@RememberContext}{%
+        \tcbset{plt context box \plt@ContextName/.copy = plt box \theplt@BoxLevel}%
+        %\tcbset{plt context raster \plt@ContextName/.copy = plt raster \theplt@BoxLevel}%
+        %\seekey{plt context raster \plt@ContextName}
+    }{}%
+    \begin{lrbox}{\plt@RasterContainer}
         \vspace*{0.5em}%
         \begin{tcbraster}[raster base style]
             \ifbool{plt@ContinueContext}{%
-                \defcounter{tcbrasternum}{\csuse{plt@ContextBoxNumber@\plt@ContextName}}%
-                \boolfalse{plt@ContinueContext}%
+                \plt@ContinueBoxContext{\plt@ContextName}%
                 \booltrue{plt@RememberContext}%
             }{}%
             \PLTMapInline{%
-                %\stepcounter{PLTBoxNumber}%
-                %\defcounter{plt@SaveBoxNumber}{\thePLTBoxNumber}%
+                %\par\seekey{plt raster \theplt@BoxLevel}\par
                 \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
-                \tcbset{plt@@single item/.style = {}}%
+                \tcbset{plt single item/.style = {}}%
+                \PLTCalculateBoxColors{PLTFGColor}{PLTBGColor}%
                 \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
-                %\defcounter{PLTBoxNumber}{\theplt@SaveBoxNumber + 2}%
                 \PLTNextColor%
             }%
             \ifbool{plt@RememberContext}{%
-                \global\csedef{plt@ContextBoxNumber@\plt@ContextName}{\thetcbrasternum}
+                \plt@RememberBoxContext{\plt@ContextName}% context
                 \boolfalse{plt@RememberContext}%
-            }{}
+            }{}%
         \end{tcbraster}%
         \vspace*{0.5em}%
+    \end{lrbox}%
+    \begin{varwidth}{\linewidth}%
+        \usebox\plt@RasterContainer%
     \end{varwidth}%
     \endgroup%
+    \addtocounter{plt@BoxLevel}{-1}%
     }{%
 }
 
@@ -314,7 +360,7 @@
 %    \PLTGatherItems{#2}%
 %    \PLTResetLoop%
 %    \defcounter{plt@BoxNumber}{0}
-%    \tcbset{plt@@single item/.style = {#1}}%
+%    \tcbset{plt single item/.style = {#1}}%
 %    \PLTMapInline{%
 %        \stepcounter{plt@BoxNumber}
 %        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
@@ -325,5 +371,57 @@
 %    \endgroup
 %}
 
+
+% PLTCalculateBoxColors: calulates the colors of a box based on
+% given foreground and background colors
+% #1: foreground color
+% #2: background color
+\NewDocumentCommand{\PLTCalculateBoxColors}{ m m }{%
+    \colorlet{PLTBoxFGColor}{#1}%
+    \colorlet{PLTBoxBGColor}{#2}%
+    \ifbool{plt@DarkMode}{%
+        \colorlet{PLTBoxFromBGColor}{PLTBoxBGColor!80!black}%
+        \colorlet{PLTBoxToBGColor}{PLTBoxBGColor!95}%
+        \colorlet{PLTBoxFrameColor}{PLTBoxBGColor!50!black}%
+    }{%
+        \colorlet{PLTBoxFromBGColor}{PLTBoxBGColor!90!black}%
+        \colorlet{PLTBoxToBGColor}{PLTBoxBGColor!80}%
+        \colorlet{PLTBoxFrameColor}{PLTBoxBGColor!40!black}%
+    }%
+    \PLTAutoContrastColorLet{PLTBoxFontUpperColor}{PLTBoxFGColor}{PLTBoxFromBGColor}%
+    \colorlet{PLTBoxFontLowerColor}{PLTBoxFontUpperColor}%
+    \PLTAutoContrastColorLet{PLTBoxTitleColor}{PLTBoxFGColor}{PLTBoxFrameColor}%
+}
+
+
+% pgfkeys patch
+% source: https://tex.stackexchange.com/a/727860/64821
+% <key 1>/.copy = <key 2> makes <key 1> a copy of <key 2>
+\def\pgfkeys@letlet#1#2#3{%
+    \expandafter\expandafter\global%
+    \expandafter\let%
+    \csname pgfk@#1/#3\expandafter\endcsname\csname pgfk@#2/#3\endcsname%
+}
+\pgfkeys{
+    /handlers/.copy/.code = {%
+    \begingroup%
+    \def\pgfkeyscurrentkey{#1}%
+    \pgfkeys@add@path@as@needed%
+    \edef\pgfkeys@temp{%
+        \endgroup%
+        \def\noexpand\pgfkeys@temp{\pgfkeyscurrentkey}%
+    }%
+    \pgfkeys@temp%
+    \pgfkeysifdefined{\pgfkeys@temp/.@cmd}{%
+        \pgfkeys@letlet{\pgfkeyscurrentpath}{\pgfkeys@temp}{.@cmd}%
+        \pgfkeys@letlet{\pgfkeyscurrentpath}{\pgfkeys@temp}{.@args}%
+        \pgfkeys@letlet{\pgfkeyscurrentpath}{\pgfkeys@temp}{.@def}%
+        \pgfkeys@letlet{\pgfkeyscurrentpath}{\pgfkeys@temp}{.@body}%
+        \pgfkeys@letlet{\pgfkeyscurrentpath}{\pgfkeys@temp}{.@@body}%
+    }{%
+        \pgfkeys@error{The key '\pgfkeys@temp' is not a code-key.}%
+    }%
+    }
+}
 
 \endinput
