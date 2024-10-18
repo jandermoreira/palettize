@@ -244,95 +244,96 @@
 \VCPrintChanges
 
 
-\section{Introduction}
+%\section{Introduction}
+%
+%This package was first released as v0.1%
+%\VCChange[disable]{
+%    type = released,
+%    version = 0.1,
+%    description = Initial version,
+%}.
+%
 
-This package was first released as v0.1%
-\VCChange[disable]{
-    type = released,
-    version = 0.1,
-    description = Initial version,
-}.
-
-
-\section{Package usage and options}\label{sec:package-usage-and-options}
-
-This package is a collection of modules that can be loaded as options passed to the \PackageName{palettize} package or as standalone packages.
-
-Currently, the implementation depends on the following packages:
-
-\begin{center}
-    \begin{tabular}{ll}
-        \PackageName{etoolbox}  & (\url{https://ctan.org/pkg/etoolbox})  \\
-        \PackageName{tcolorbox} & (\url{https://ctan.org/pkg/tcolorbox}) \\
-        \PackageName{xcolor}    & (\url{https://ctan.org/pkg/xcolor})    \\
-    \end{tabular}
-\end{center}
-
-\begin{macro*}{usepackage}{\OArg{options list}}[palettize]
-    The basic usage is as follows.
-
-    \begin{latexcode}
-        \usepackage{palettize}
-    \end{latexcode}
-
-    This will define several macros for manipulating color palettes, as described in \cref{sec:palettes}, and is the core of the package.
-
-    \bigskip
-    Package \PackageName{palettize}'s specific options are:
-
-    \begin{option}{all-palettes}{}
-        With \Option{all-palettes}, all predefined palettes are loaded and made available for use. The full list is given in \Cref{sec:available-palettes}.
-    \end{option}
-
-    \bigskip
-    To load specific modules, the following options can be passed:
-
-    \begin{option}{boxes}{}
-        The \Option{boxes} module provides an easy way to turn a list of \Macro{items} into a colored array of boxes.
-
-        This module can also be loaded with:
-        \begin{latexcode}
-            \usepackage{palettize-boxes}
-        \end{latexcode}
-
-        Details in \Cref{sec:boxes}.
-    \end{option}
-
-    \begin{option}{itemizer}{}
-        This option enhances environments like \latexinline{enumerate}, \latexinline{itemize} and \latexinline{description} to use color palettes.
-
-        This module can also be loaded with:
-        \begin{latexcode}
-            \usepackage{palettize-itemizer}
-        \end{latexcode}
-
-        Details in \Cref{sec:itemizer}.
-    \end{option}
-
-    \begin{option}{getitems}{}
-        This option provides direct support for processing lists of items using the \latexinline{\item} macro as an itemizer. In practice, it provides macros for manipulating lists for other \PackageName{palettize} modules, but can be used independently. \PackageName{palettize-getitems} is a ``core'' module used by \PackageName{palettize-boxes} and \PackageName{palettize-itemizer} and is available as a bonus feature.
-
-        This module can also be loaded with:
-        \begin{latexcode}
-            \usepackage{palettize-getitems}
-        \end{latexcode}
-
-        Details in \Cref{sec:getitems}.
-    \end{option}
-
-    Each module can have its own set of options, which are described in their respective sections. All module-specific options can also be passed directly to \PackageName{palettize} and if their respective module is not loaded, they are simply ignored.
-
-    As an example, both commands are equivalent:
-
-    \begin{latexcode}
-        \usepackage[itemizer, keep-description]{palettize}
-    \end{latexcode}
-
-    \vspace{-\baselineskip}
-    \begin{latexcode}
-        \usepackage[keep-description]{palettize-itemizer}
-    \end{latexcode}
-\end{macro*}
+%\section{Package usage and options}\label{sec:package-usage-and-options}
+%
+%This package is a collection of modules that can be loaded as options passed to the \PackageName{palettize} package or as standalone packages.
+%
+%Currently, the implementation depends on the following packages:
+%
+%\begin{center}
+%    \begin{tabular}{ll}
+%        \PackageName{etoolbox}  & (\url{https://ctan.org/pkg/etoolbox})  \\
+%        \PackageName{tcolorbox} & (\url{https://ctan.org/pkg/tcolorbox}) \\
+%        \PackageName{xcolor}    & (\url{https://ctan.org/pkg/xcolor})    \\
+%    \end{tabular}
+%\end{center}
+%
+%\begin{macro*}{usepackage}{\OArg{options list}}[palettize]
+%    The basic usage is as follows.
+%
+%    \begin{latexcode}
+%        \usepackage{palettize}
+%    \end{latexcode}
+%
+%    This will define several macros for manipulating color palettes, as described in \cref{sec:palettes}, and is the core of the package.
+%
+%    \bigskip
+%    Package \PackageName{palettize}'s specific options are:
+%
+%    \begin{option}{all-palettes}{}
+%        With \Option{all-palettes}, all predefined palettes are loaded and made available for use. The full list is given in \Cref{sec:available-palettes}.
+%    \end{option}
+%
+%    \bigskip
+%    To load specific modules, the following options can be passed:
+%
+%    \begin{option}{boxes}{}
+%        The \Option{boxes} module provides an easy way to turn a list of \Macro{items} into a colored array of boxes.
+%
+%        This module can also be loaded with:
+%        \begin{latexcode}
+%            \usepackage{palettize-boxes}
+%        \end{latexcode}
+%
+%        Details in \Cref{sec:boxes}.
+%    \end{option}
+%
+%    \begin{option}{itemizer}{}
+%        This option enhances environments like \latexinline{enumerate}, \latexinline{itemize} and \latexinline{description} to use color palettes.
+%
+%        This module can also be loaded with:
+%        \begin{latexcode}
+%            \usepackage{palettize-itemizer}
+%        \end{latexcode}
+%
+%        Details in \Cref{sec:itemizer}.
+%    \end{option}
+%
+%    \begin{option}{getitems}{}
+%        This option provides direct support for processing lists of items using the \latexinline{\item} macro as an itemizer. In practice, it provides macros for manipulating lists for other \PackageName{palettize} modules, but can be used independently. \PackageName{palettize-getitems} is a ``core'' module used by \PackageName{palettize-boxes} and \PackageName{palettize-itemizer} and is available as a bonus feature.
+%
+%        This module can also be loaded with:
+%        \begin{latexcode}
+%            \usepackage{palettize-getitems}
+%        \end{latexcode}
+%
+%        Details in \Cref{sec:getitems}.
+%    \end{option}
+%
+%    Each module can have its own set of options, which are described in their respective sections. All module-specific options can also be passed directly to \PackageName{palettize} and if their respective module is not loaded, they are simply ignored.
+%
+%    As an example, both commands are equivalent:
+%
+%    \begin{latexcode}
+%        \usepackage[itemizer, keep-description]{palettize}
+%    \end{latexcode}
+%
+%    \vspace{-\baselineskip}
+%    \begin{latexcode}
+%        \usepackage[keep-description]{palettize-itemizer}
+%    \end{latexcode}
+%\end{macro*}
+%
 
 
 \section{The palettes of \PackageName{palettize}}\label{sec:palettes}
@@ -478,7 +479,7 @@ Some palettes are shipped with this package and can be loaded with \MacroRef{PLT
 
 A palette called \latexinline{nightfall-ambiance} is always loaded and it is used as the default palette by all modules.
 
-\begin{tcolorbox}[width = 0.5\textwidth, boxrule = 0pt]
+\begin{tcolorbox}[width = 0.5\textwidth, colback = white, colframe = gray, boxrule = 0.1pt]
     \textbf{Palette nightfall-ambiance}\medskip\par
     \PLTIteratePalette{nightfall-ambiance}{%
         \tikz \node[draw, fill = PLTBGColor, text = PLTFGColor, font = \bfseries\sffamily, text width = 0.95\linewidth, text height = 0.8em] {\PLTFGColorName\ on \PLTBGColorName };
@@ -490,11 +491,11 @@ A palette called \latexinline{nightfall-ambiance} is always loaded and it is use
 
 The following palettes are available.
 
-\begin{multicols}{2}
+\begin{tcbraster}[raster columns = 2]
     \PLTIteratePaletteList{
         \expandafter\ifstrequal\expandafter{\PLTCurrentPalette}{nightfall-ambiance}{}{%
-            \par
-            \begin{tcolorbox}[boxrule = 0pt]
+            \begin{tcolorbox}[colback = white, colframe = gray, boxrule = 0.1pt]
+                \small%
                 \textbf{Palette \PLTCurrentPalette}\medskip\par
                 \latexinline{\PLTUseResource}\texttt{\{\PLTCurrentPalette\}}\strut\bigskip\par
                 \PLTIteratePalette{\PLTCurrentPalette}{%
@@ -506,7 +507,7 @@ The following palettes are available.
             \end{tcolorbox}%
         }%
     }
-\end{multicols}
+\end{tcbraster}
 
 \subsection{Palettes are local!}\label{sec:palettes-are-local}
 
@@ -563,7 +564,7 @@ The \PackageName{palettize-boxes} provides a single option: \OptionRef{handwriti
 \begin{option}{handwriting}{}
     The option \Option{hanwriting} loads Emerald fonts.
 
-     font JD\footnotemark.
+    font JD\footnotemark.
 
     is specified, as seen in \Cref{sec:box-styles}.
 
@@ -576,7 +577,7 @@ The environment \latexinline{PLTBoxRaster} is used to create a box for each item
 \begin{example}{}
     This is a boxed list with the current (default) palette:
 
-    \begin{PLTBoxRaster}
+    \begin{PLTBoxRaster}[enumerate]
         \item Software is related to the programs that instruct the execution of a computer.
         \item Hardware is the physical part of a computer, such as processor, memory, motherboard, data storage units etc.
         \item Firmware is the software that provides low-level control of computing device hardware.
@@ -584,355 +585,356 @@ The environment \latexinline{PLTBoxRaster} is used to create a box for each item
     \end{PLTBoxRaster}
 \end{example}
 
-Each item in the list corresponds to a \Macro{item} and any text before the first item is ignored\footnote{The body of the environment is processed with \PackageName{palettize-getitem} (\Cref{sec:getitems}).}.
-
-An optional title for each box can be provided.
-
-\begin{example}{}
-    \begin{PLTBoxRaster}
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-Since boxes are rendered using \PackageName{tcolorbox}'s raster, the new environments can pass specific options using angle brackets.
-
-\begin{example}{}
-    \begin{PLTBoxRaster}
-        <raster equal height = none, raster valign = center, raster columns = 4>
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-Numbered boxes are created using the option \OptionInd{enumerate}.
-
-\begin{example}{}
-    \begin{PLTBoxRaster}[enumerate]
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-The numbering style can be set with \OptionInd{arabic} for regular arabic numbers (default), \OptionInd{alph} for lowercase letter, \OptionInd{Alph} for uppercase letter, \OptionInd{roman} for lower case roman numbers, \OptionInd{Roman} for roman upper case, or \OptionInd{fnsymbol} for footnote-like symbols.
-
-\begin{example}{}
-    \begin{PLTBoxRaster}[enumerate, Roman]
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-The boxes colors depend on the current palette.
-
-\begin{example}{}
-    \PLTUseResource{toasted-peach}
-    \PLTUsePalette{toasted-peach}
-    \begin{tcolorbox}[colback = black]
-        \begin{PLTBoxRaster}[enumerate, fnsymbol]
-            \item[Software] Computer programs that instruct the execution of a computer.
-            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-            \item[Firmware] Software that provides low-level control of computing device hardware.
-            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-        \end{PLTBoxRaster}
-    \end{tcolorbox}
-\end{example}
-
-\subsubsection*{Box styles}
-
-By default, boxes use a preset style called \OptionInd{itemize}, which can be specified as an optional argument to \latexinline{PLTBoxRaster} environments. As seen in previous examples, \OptionInd{enumerate} provides a box style with numbering.
-
-\begin{example}{}
-    \begin{tcbraster}
-        \begin{tcolorbox}
-            \begin{PLTBoxRaster}[
-                itemize,
-                raster = {raster columns = 2}
-            ]
-                \item One
-                \item Two
-                \item Three
-                \item Four
-            \end{PLTBoxRaster}
-        \end{tcolorbox}
-        \begin{tcolorbox}
-            \begin{PLTBoxRaster}[
-                enumerate, Roman,
-                raster = {raster columns = 2}
-            ]
-                \item One
-                \item Two
-                \item Three
-                \item Four
-            \end{PLTBoxRaster}
-        \end{tcolorbox}
-    \end{tcbraster}
-\end{example}
-
-\subsubsection*{Using \PackageName{tcolorbox}'s resources}
-
-Options to the \latexinline{tcbraster} environment can be added with option \OptionInd{raster}.
-
-\begin{example}{}
-    \PLTUseResource{toasted-peach}
-    \PLTUsePalette{toasted-peach}
-    \begin{tcolorbox}[colback = black]
-        \begin{PLTBoxRaster}[raster = {raster equal height = none, raster valign = top, raster columns = 4}]
-            \item[Software] Computer programs that instruct the execution of a computer.
-            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-            \item[Firmware] Software that provides low-level control of computing device hardware.
-            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-        \end{PLTBoxRaster}
-    \end{tcolorbox}
-\end{example}
-
-When using \OptionInd{raster set} all \PackageName{palettize-boxes}' default options are replaced, allowing full control.
-
-\begin{example}{}
-    \PLTUseResource{sting-has-sprung}
-    \PLTUsePalette{sting-has-sprung}
-    \begin{PLTBoxRaster}[raster set = {}]  % ignore palettize-boxes' presets
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-The options \OptionInd{box} and \OptionInd{box set} work in the same way for all boxes.
-
-\begin{example}{}
-    \begin{PLTBoxRaster}[box = {boxrule = 0pt, halign = center, sharp corners}]
-        \item[Software] Computer programs that instruct the execution of a computer.
-        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item[Firmware] Software that provides low-level control of computing device hardware.
-        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{PLTBoxRaster}
-\end{example}
-
-New styles can be defined.
-
-\begin{example}{}
-    \tcbset{
-        my item/.style = {
-            colframe = PLTBGColor,
-            enhanced,
-            interior style={
-                left color = PLTBGColor!80,
-                right color = PLTBGColor!60,
-            },
-            valign = center,
-            fontupper = \sffamily\color{PLTFGColor}\scshape\large,
-            fonttitle = \ttfamily\color{PLTFGColor!10},
-            title = {Item \#\PLTCounterStyle{tcbrasternum}},
-            rotate = 10,
-            lifted shadow = {1mm}{-2mm}{3mm}{0.1mm}{black!50!white},
-            sharp corners,
-            rounded corners = east,
-        },
-    }
-
-    \begin{PLTBoxRaster}[my item, raster = {raster width = 0.8\linewidth}]
-        \item One
-        \item Two
-        \item Three
-    \end{PLTBoxRaster}
-\end{example}
-
-
-\subsubsection{Available box styles}\label{sec:box-styles}
-
-\noindent\textbf{Handwriting}
-
-\begin{example}{}
-    My first list:\\
-    \begin{PLTBoxRaster}[handwriting, palette = toasted-peach]
-        \item One
-        \item Two
-        \item Three
-    \end{PLTBoxRaster}
-
-    \bigskip
-    My second list:\\
-    \begin{PLTBoxRaster}[handwriting, palette = sting-has-sprung]
-        \item [First] One
-        \item [Second] Two
-        \item [Third] Three
-    \end{PLTBoxRaster}
-\end{example}
-
-\noindent\textbf{Schedule}
-
-\begin{example}{}
-    \PLTUsePalette{toasted-peach}
-    \begin{PLTBoxRaster}[month schedule]
-        \item [April]
-        \begin{PLTBoxRaster}[day schedule]
-            \item [9] First meeting\\\&\\Welcome party
-            \item [21] Second meeting
-        \end{PLTBoxRaster}
-        \item [July]
-        \begin{PLTBoxRaster}[day schedule]
-            \item [3] Staff meeting
-            \item [27] Third meeting
-        \end{PLTBoxRaster}
-        \item [October]
-        \begin{PLTBoxRaster}[day schedule]
-            \item [8] Final meeting
-        \end{PLTBoxRaster}
-        \item [December]
-        \begin{PLTBoxRaster}[day schedule]
-            \item [11] Party
-            \item [25] Christmas
-        \end{PLTBoxRaster}
-    \end{PLTBoxRaster}
-\end{example}
-
-\subsection{Lists}\label{sec:itemizer}
-
-The module \PackageName{palettize-itemizer} adds color palettes to lists. Currently, the environments \latexinline{enumerate}, \latexinline{itemize}, and \latexinline{description} are affected. The default palette is applied to these environments (see \Cref{sec:available-palettes}).
-
-\begin{macro*}{usepackage}{\OArg{options list}}[palettize-itemizer]
-    Package options include the following:
-
-    \begin{option}{keep-enumerate}{}
-        When specified, \Option{keep-enumerate} preserves the original \latexinline{enumerate} environment untouched.
-    \end{option}
-
-    \begin{option}{keep-itemize}{}
-        When specified, \Option{keep-itemize} preserves the original \latexinline{itemize} environment untouched.
-    \end{option}
-
-    \begin{option}{keep-description}{}
-        When specified, \Option{keep-description} preserves the original \latexinline{description} environment untouched.
-    \end{option}
-
-    \begin{option}{keep-all}{}
-        This is the same as using \Option{keep-enumerate}, \Option{keep-itemize}, and \Option{keep-description} toghether.
-    \end{option}
-
-    All of these options can be specified also when using \latexinline{\usepackage{palettize}}.
-\end{macro*}
-
-The modified lists are exemplified below.
-
-\begin{example}{}
-    \begin{itemize}
-        \item Software: Computer programs that instruct the execution of a computer.
-        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item Firmware: Software that provides low-level control of computing device hardware.
-        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{itemize}
-\end{example}
-
-\begin{example}{}
-    \begin{enumerate}
-        \item Software: Computer programs that instruct the execution of a computer.
-        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item Firmware: Software that provides low-level control of computing device hardware.
-        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{enumerate}
-\end{example}
-
-\begin{example}{}
-    \begin{tabular}{p{0.45\linewidth}p{0.45\linewidth}}
-        \begin{description}
-            \item[Software] Computer programs that instruct the execution of a computer.
-            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-            \item[Firmware] Software that provides low-level control of computing device hardware.
-            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-        \end{description}
-        &
-        \PLTUseResource{sliced-citrus}
-        \PLTUsePalette{sliced-citrus}
-        \begin{description}
-            \item[Software] Computer programs that instruct the execution of a computer.
-            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-            \item[Firmware] Software that provides low-level control of computing device hardware.
-            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
-        \end{description}
-    \end{tabular}
-\end{example}
-
-\subsubsection{New environments for lists}
-
-Three new environments were created to handle palette-aware lists: \latexinline{PLTEnumerate}, \latexinline{PLTItemize}, and \latexinline{PLTDescription}. These are used to replace their respective counterparts. Yet, they can be used directly.
-
-\begin{center}
-    \begin{tabular}{ll}
-        \textbf{Environment}      & \textbf{Replacement environment} \\
-        \hline
-        \latexinline{enumerate}   & \latexinline{PLTEnumerate}       \\
-        \latexinline{itemize}     & \latexinline{PLTItemize}         \\
-        \latexinline{description} & \latexinline{PLTDescription}     \\
-        \hline
-    \end{tabular}
-\end{center}
-
-When the option \OptionRef{keep-all} is used, all colored environments are available using these alternatives.
-
-\begin{example}{}
-    \begin{PLTEnumerate}
-        \item One
-        \item Two
-        \item Three
-    \end{PLTEnumerate}
-
-    \medskip
-    \begin{PLTItemize}
-        \item One
-        \item Two
-        \item Three
-    \end{PLTItemize}
-
-    \medskip
-    \begin{PLTDescription}
-        \item [One] First.
-        \item [Two] Second.
-        \item [Three] Third.
-    \end{PLTDescription}
-\end{example}
-
-\subsubsection{Accessing the original list environments}
-
-If a list environment was not preserved by any of the \Option{keep-\Argument{list name}} options it can still be used with the renamed environments below.
-
-\begin{center}
-    \begin{tabular}{ll}
-        \textbf{Environment}      & \textbf{Renamed environment}         \\
-        \hline
-        \latexinline{enumerate}   & \latexinline{enumerateenumerate}     \\
-        \latexinline{itemize}     & \latexinline{itemizeitemize}         \\
-        \latexinline{description} & \latexinline{descriptiondescription} \\
-        \hline
-    \end{tabular}
-\end{center}
-
-\bigskip
-\begin{example}{}
-    This is an original unnumbered list:
-
-    \begin{itemizeitemize}
-        \item Software: Computer programs that instruct the execution of a computer.
-        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
-        \item Firmware: Software that provides low-level control of computing device hardware.
-        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
-    \end{itemizeitemize}
-\end{example}
-
-Double-named versions are always created, even if \Option{keep-\Argument{list~name}} is specified as an option.
-
-\subsection{Compatibility with other packages}
-
-The module \PackageName{palettize-itemizer} appears to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testing has been performed.
+%Each item in the list corresponds to a \Macro{item} and any text before the first item is ignored\footnote{The body of the environment is processed with \PackageName{palettize-getitem} (\Cref{sec:getitems}).}.
+%
+%An optional title for each box can be provided.
+%
+%\begin{example}{}
+%    \begin{PLTBoxRaster}
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%Since boxes are rendered using \PackageName{tcolorbox}'s raster, the new environments can pass specific options using angle brackets.
+%
+%\begin{example}{}
+%    \begin{PLTBoxRaster}
+%        <raster equal height = none, raster valign = center, raster columns = 4>
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%Numbered boxes are created using the option \OptionInd{enumerate}.
+%
+%\begin{example}{}
+%    \begin{PLTBoxRaster}[enumerate]
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%The numbering style can be set with \OptionInd{arabic} for regular arabic numbers (default), \OptionInd{alph} for lowercase letter, \OptionInd{Alph} for uppercase letter, \OptionInd{roman} for lower case roman numbers, \OptionInd{Roman} for roman upper case, or \OptionInd{fnsymbol} for footnote-like symbols.
+%
+%\begin{example}{}
+%    \begin{PLTBoxRaster}[enumerate, Roman]
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%The boxes colors depend on the current palette.
+%
+%\begin{example}{}
+%    \PLTUseResource{toasted-peach}
+%    \PLTUsePalette{toasted-peach}
+%    \begin{tcolorbox}[colback = black]
+%        \begin{PLTBoxRaster}[enumerate, fnsymbol]
+%            \item[Software] Computer programs that instruct the execution of a computer.
+%            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%            \item[Firmware] Software that provides low-level control of computing device hardware.
+%            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%        \end{PLTBoxRaster}
+%    \end{tcolorbox}
+%\end{example}
+%
+%\subsubsection*{Box styles}
+%
+%By default, boxes use a preset style called \OptionInd{itemize}, which can be specified as an optional argument to \latexinline{PLTBoxRaster} environments. As seen in previous examples, \OptionInd{enumerate} provides a box style with numbering.
+%
+%\begin{example}{}
+%    \begin{tcbraster}
+%        \begin{tcolorbox}
+%            \begin{PLTBoxRaster}[
+%                itemize,
+%                raster = {raster columns = 2}
+%            ]
+%                \item One
+%                \item Two
+%                \item Three
+%                \item Four
+%            \end{PLTBoxRaster}
+%        \end{tcolorbox}
+%        \begin{tcolorbox}
+%            \begin{PLTBoxRaster}[
+%                enumerate, Roman,
+%                raster = {raster columns = 2}
+%            ]
+%                \item One
+%                \item Two
+%                \item Three
+%                \item Four
+%            \end{PLTBoxRaster}
+%        \end{tcolorbox}
+%    \end{tcbraster}
+%\end{example}
+%
+%\subsubsection*{Using \PackageName{tcolorbox}'s resources}
+%
+%Options to the \latexinline{tcbraster} environment can be added with option \OptionInd{raster}.
+%
+%\begin{example}{}
+%    \PLTUseResource{toasted-peach}
+%    \PLTUsePalette{toasted-peach}
+%    \begin{tcolorbox}[colback = black]
+%        \begin{PLTBoxRaster}[raster = {raster equal height = none, raster valign = top, raster columns = 4}]
+%            \item[Software] Computer programs that instruct the execution of a computer.
+%            \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%            \item[Firmware] Software that provides low-level control of computing device hardware.
+%            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%        \end{PLTBoxRaster}
+%    \end{tcolorbox}
+%\end{example}
+%
+%When using \OptionInd{raster set} all \PackageName{palettize-boxes}' default options are replaced, allowing full control.
+%
+%\begin{example}{}
+%    \PLTUseResource{sting-has-sprung}
+%    \PLTUsePalette{sting-has-sprung}
+%    \begin{PLTBoxRaster}[raster set = {}]  % ignore palettize-boxes' presets
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%The options \OptionInd{box} and \OptionInd{box set} work in the same way for all boxes.
+%
+%\begin{example}{}
+%    \begin{PLTBoxRaster}[box = {boxrule = 0pt, halign = center, sharp corners}]
+%        \item[Software] Computer programs that instruct the execution of a computer.
+%        \item[Hardware]The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item[Firmware] Software that provides low-level control of computing device hardware.
+%        \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%New styles can be defined.
+%
+%\begin{example}{}
+%    \tcbset{
+%        my item/.style = {
+%            colframe = PLTBGColor,
+%            enhanced,
+%            interior style={
+%                left color = PLTBGColor!80,
+%                right color = PLTBGColor!60,
+%            },
+%            valign = center,
+%            fontupper = \sffamily\color{PLTFGColor}\scshape\large,
+%            fonttitle = \ttfamily\color{PLTFGColor!10},
+%            title = {Item \#\PLTCounterStyle{tcbrasternum}},
+%            rotate = 10,
+%            lifted shadow = {1mm}{-2mm}{3mm}{0.1mm}{black!50!white},
+%            sharp corners,
+%            rounded corners = east,
+%        },
+%    }
+%
+%    \begin{PLTBoxRaster}[my item, raster = {raster width = 0.8\linewidth}]
+%        \item One
+%        \item Two
+%        \item Three
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%
+%\subsubsection{Available box styles}\label{sec:box-styles}
+%
+%\noindent\textbf{Handwriting}
+%
+%\begin{example}{}
+%    My first list:\\
+%    \begin{PLTBoxRaster}[handwriting, palette = toasted-peach]
+%        \item One
+%        \item Two
+%        \item Three
+%    \end{PLTBoxRaster}
+%
+%    \bigskip
+%    My second list:\\
+%    \begin{PLTBoxRaster}[handwriting, palette = sting-has-sprung]
+%        \item [First] One
+%        \item [Second] Two
+%        \item [Third] Three
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%\noindent\textbf{Schedule}
+%
+%\begin{example}{}
+%    \PLTUsePalette{toasted-peach}
+%    \begin{PLTBoxRaster}[month schedule]
+%        \item [April]
+%        \begin{PLTBoxRaster}[day schedule]
+%            \item [9] First meeting\\\&\\Welcome party
+%            \item [21] Second meeting
+%        \end{PLTBoxRaster}
+%        \item [July]
+%        \begin{PLTBoxRaster}[day schedule]
+%            \item [3] Staff meeting
+%            \item [27] Third meeting
+%        \end{PLTBoxRaster}
+%        \item [October]
+%        \begin{PLTBoxRaster}[day schedule]
+%            \item [8] Final meeting
+%        \end{PLTBoxRaster}
+%        \item [December]
+%        \begin{PLTBoxRaster}[day schedule]
+%            \item [11] Party
+%            \item [25] Christmas
+%        \end{PLTBoxRaster}
+%    \end{PLTBoxRaster}
+%\end{example}
+%
+%\subsection{Lists}\label{sec:itemizer}
+%
+%The module \PackageName{palettize-itemizer} adds color palettes to lists. Currently, the environments \latexinline{enumerate}, \latexinline{itemize}, and \latexinline{description} are affected. The default palette is applied to these environments (see \Cref{sec:available-palettes}).
+%
+%\begin{macro*}{usepackage}{\OArg{options list}}[palettize-itemizer]
+%    Package options include the following:
+%
+%    \begin{option}{keep-enumerate}{}
+%        When specified, \Option{keep-enumerate} preserves the original \latexinline{enumerate} environment untouched.
+%    \end{option}
+%
+%    \begin{option}{keep-itemize}{}
+%        When specified, \Option{keep-itemize} preserves the original \latexinline{itemize} environment untouched.
+%    \end{option}
+%
+%    \begin{option}{keep-description}{}
+%        When specified, \Option{keep-description} preserves the original \latexinline{description} environment untouched.
+%    \end{option}
+%
+%    \begin{option}{keep-all}{}
+%        This is the same as using \Option{keep-enumerate}, \Option{keep-itemize}, and \Option{keep-description} toghether.
+%    \end{option}
+%
+%    All of these options can be specified also when using \latexinline{\usepackage{palettize}}.
+%\end{macro*}
+%
+%The modified lists are exemplified below.
+%
+%\begin{example}{}
+%    \begin{itemize}
+%        \item Software: Computer programs that instruct the execution of a computer.
+%        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item Firmware: Software that provides low-level control of computing device hardware.
+%        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{itemize}
+%\end{example}
+%
+%\begin{example}{}
+%    \begin{enumerate}
+%        \item Software: Computer programs that instruct the execution of a computer.
+%        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item Firmware: Software that provides low-level control of computing device hardware.
+%        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{enumerate}
+%\end{example}
+%
+%\begin{example}{}
+%    \begin{tabular}{p{0.45\linewidth}p{0.45\linewidth}}
+%        \begin{description}
+%            \item[Software] Computer programs that instruct the execution of a computer.
+%            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%            \item[Firmware] Software that provides low-level control of computing device hardware.
+%            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%        \end{description}
+%        &
+%        \PLTUseResource{sliced-citrus}
+%        \PLTUsePalette{sliced-citrus}
+%        \begin{description}
+%            \item[Software] Computer programs that instruct the execution of a computer.
+%            \item[Hardware] The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%            \item[Firmware] Software that provides low-level control of computing device hardware.
+%            \item[Middleware] Type of computer software program that provides services to software applications beyond those available from the operating system.
+%        \end{description}
+%    \end{tabular}
+%\end{example}
+%
+%\subsubsection{New environments for lists}
+%
+%Three new environments were created to handle palette-aware lists: \latexinline{PLTEnumerate}, \latexinline{PLTItemize}, and \latexinline{PLTDescription}. These are used to replace their respective counterparts. Yet, they can be used directly.
+%
+%\begin{center}
+%    \begin{tabular}{ll}
+%        \textbf{Environment}      & \textbf{Replacement environment} \\
+%        \hline
+%        \latexinline{enumerate}   & \latexinline{PLTEnumerate}       \\
+%        \latexinline{itemize}     & \latexinline{PLTItemize}         \\
+%        \latexinline{description} & \latexinline{PLTDescription}     \\
+%        \hline
+%    \end{tabular}
+%\end{center}
+%
+%When the option \OptionRef{keep-all} is used, all colored environments are available using these alternatives.
+%
+%\begin{example}{}
+%    \begin{PLTEnumerate}
+%        \item One
+%        \item Two
+%        \item Three
+%    \end{PLTEnumerate}
+%
+%    \medskip
+%    \begin{PLTItemize}
+%        \item One
+%        \item Two
+%        \item Three
+%    \end{PLTItemize}
+%
+%    \medskip
+%    \begin{PLTDescription}
+%        \item [One] First.
+%        \item [Two] Second.
+%        \item [Three] Third.
+%    \end{PLTDescription}
+%\end{example}
+%
+%\subsubsection{Accessing the original list environments}
+%
+%If a list environment was not preserved by any of the \Option{keep-\Argument{list name}} options it can still be used with the renamed environments below.
+%
+%\begin{center}
+%    \begin{tabular}{ll}
+%        \textbf{Environment}      & \textbf{Renamed environment}         \\
+%        \hline
+%        \latexinline{enumerate}   & \latexinline{enumerateenumerate}     \\
+%        \latexinline{itemize}     & \latexinline{itemizeitemize}         \\
+%        \latexinline{description} & \latexinline{descriptiondescription} \\
+%        \hline
+%    \end{tabular}
+%\end{center}
+%
+%\bigskip
+%\begin{example}{}
+%    This is an original unnumbered list:
+%
+%    \begin{itemizeitemize}
+%        \item Software: Computer programs that instruct the execution of a computer.
+%        \item Hardware: The physical parts of a computer, such processor, memory, motherboard, data storage units etc.
+%        \item Firmware: Software that provides low-level control of computing device hardware.
+%        \item Middleware: Type of computer software program that provides services to software applications beyond those available from the operating system.
+%    \end{itemizeitemize}
+%\end{example}
+%
+%Double-named versions are always created, even if \Option{keep-\Argument{list~name}} is specified as an option.
+%
+%\subsection{Compatibility with other packages}
+%
+%The module \PackageName{palettize-itemizer} appears to be compatible with \PackageName{enumitem}\footnote{\url{https://www.ctan.org/pkg/enumitem}} and \PackageName{enumerate}\footnote{\url{https://www.ctan.org/pkg/enumerate}}, but no extensive testing has been performed.
+%
 
 
 \section{Beamer}

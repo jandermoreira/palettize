@@ -39,7 +39,7 @@
     alph/.code = {\csdef{PLTCounterStyle}{\alph}},
     Alph/.code = {\csdef{PLTCounterStyle}{\Alph}},
     arabic/.code = {\csdef{PLTCounterStyle}{\arabic}},
-    fnsymbol/.code = {\csdef{PLTCounterStyle}{\fnsymbol}},
+    fnsymbol/.code = {\csdef{PLTCounterStyle}{\plt@FNSymbol}},
     roman/.code = {\csdef{PLTCounterStyle}{\roman}},
     Roman/.code = {\csdef{PLTCounterStyle}{\Roman}},
 %
@@ -136,7 +136,7 @@
             \path [fill = PLTBoxFrameColor] (North West) circle (1em);
             \path [thick, draw = PLTBoxTitleColor] ($(North West) + (0.9em, 0)$) arc (0:360:0.9em);
             %\path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\textcolor{PLTBoxTitleColor}{\smaller\PLTCounterStyle{tcbrasternum}}};
+            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\textcolor{PLTBoxTitleColor}{\smaller\sffamily\PLTCounterStyle{tcbrasternum}}};
         },
     },
     handwriting/.style = {
@@ -223,6 +223,11 @@
         rounded corners = south,
         drop fuzzy shadow southeast = PLTBGColor!50!black,
     },
+    %cleanest/.style = {
+    %    blankest,
+    %    opacityframe = 0,
+    %    opacityback = 0,
+    %},
 }
 
 \PLTSet{
@@ -327,7 +332,7 @@
     }{}%
     \begin{lrbox}{\plt@RasterContainer}
         \vspace*{0.5em}%
-        \begin{tcbraster}[raster base style]
+        \begin{tcbraster}[raster base style]%{cleanest}
             \ifbool{plt@ContinueContext}{%
                 \plt@ContinueBoxContext{\plt@ContextName}%
                 \booltrue{plt@RememberContext}%
@@ -392,6 +397,38 @@
     \colorlet{PLTBoxFontLowerColor}{PLTBoxFontUpperColor}%
     \PLTAutoContrastColorLet{PLTBoxTitleColor}{PLTBoxFGColor}{PLTBoxFrameColor}%
 }
+
+
+\RequirePackage{alphalph}
+\RequirePackage{amssymb}
+\NewDocumentCommand{\plt@SymbolSimple}{ m }{%
+    \ensuremath{%
+        \ifcase#1%
+        \or *%
+        \or \dagger%
+        \or \ddagger%
+        \or \sharp%
+        \or \natural%
+        \or \bigstar%
+        \or \nmid%
+        \or \divideontimes%
+        \or \maltese%
+        \or \multimap%
+        %\or \spadesuit%
+        %\or \clubsuit%
+        %\or \blacklozenge%
+        %\or \circledast%
+        %\or \mathfrak{x}%
+        \else%
+            \@ctrerr%
+        \fi%
+    }%
+}
+\newalphalph{\plt@SymbolMulti}[mult]{\plt@SymbolSimple}{}
+\NewDocumentCommand{\plt@FNSymbol}{ m }{%
+    \plt@SymbolMulti{\csuse{the#1}}%
+}
+
 
 
 % pgfkeys patch
