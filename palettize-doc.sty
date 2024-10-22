@@ -1,0 +1,371 @@
+%! Package = palettize-doc
+%! Author = Jander Moreira (moreira.jander@gmail.com)
+%! Date = 2024/10
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{palettize-doc}[2024/10/18 Provides style for the documentation]
+
+%\RequirePackage{biblatex}
+\RequirePackage{array}
+\RequirePackage{versionchanges}
+\RequirePackage{etoolbox}
+\appto{\ttfamily}{\frenchspacing}{}{}
+
+\RequirePackage{enumitem}
+\setlist{nosep}
+
+\RequirePackage[all, all-palettes, handwriting]{palettize}
+
+
+%% Appearance
+
+\RequirePackage{textcomp}
+\RequirePackage[all]{nowidow}
+
+\RequirePackage{geometry}
+\geometry{top = 2.5cm, bottom = 2cm, right = 2.5cm, left = 4cm}
+
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks,
+    urlcolor = blue!20!black,
+    linkcolor = blue!10!black,
+    citecolor = black!80,
+}
+
+\RequirePackage{cleveref}
+
+\RequirePackage{makeidx}
+\makeindex
+
+\RequirePackage[outputdir = ./out]{minted}
+\newminted{latex}{autogobble, breaklines, bgcolor = blue!5, fontsize = \footnotesize}
+\newmintinline{latex}{}
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins, listings, minted, breakable}
+\tcbset{
+    description/.style = {
+        coltitle = black,
+        fontupper = \normalsize,
+        colbacktitle = white,
+        titlerule = 0.001pt,
+        enhanced jigsaw,
+        breakable,
+        width = \dimexpr \linewidth - 2em \relax,
+        flush right,
+        top = 0.5ex,
+        bottom = 0pt,
+        left = 0pt,
+        right = 0pt,
+        opacitybacktitle = 0,
+        opacityframe = 0,
+        opacityback = 0,
+    }
+}
+\newtcblisting{example}[1]{
+    enhanced jigsaw,
+    breakable,
+    colback = blue!3,
+    colframe = blue!40!black!30,
+    sharp corners,
+    box align = top,
+    boxrule = 1pt,
+    fontupper = \footnotesize,
+    fontlower = \footnotesize,
+    minted options = {
+        fontsize = \footnotesize,
+        breaklines,
+        autogobble,
+    },
+    listing engine = minted,
+%extras middle and last = {
+%%    %\coordinate (A1) at ($(interior.south east) + (-10pt,5pt)$);
+%%    %\coordinate (C1) at ($(interior.south east) + (-6pt,7.5pt)$);
+%%    %\draw[fill=blue] (A1) -- +(0,5pt) -- (C1) -- cycle;
+%    \draw[dashed, gray] (interior.south west) -- (interior.south east);
+%},
+    #1
+}
+
+
+%% Documentation support
+
+\colorlet{argumentcolor}{orange!30!brown}
+\colorlet{colorcolor}{blue!75!black}
+\definecolor{optioncolor}{HTML}{687821}
+\colorlet{environmentcolor}{brown!80!magenta}
+\colorlet{palettecolor}{teal}
+\definecolor{stylecolor}{HTML}{4c7c71}
+
+\NewDocumentCommand{\PackageName}{ m }{\mbox{\textsf{#1}}}
+
+% Arguments
+\NewDocumentCommand{\Argument}{ m }{%
+    \textcolor{argumentcolor}{$\langle$\normalfont\small\textsl{#1}$\rangle$}%
+}
+\NewDocumentCommand{\MArg}{ m }{\mbox{\texttt{\{}\Argument{#1}\texttt{\}}}}
+\NewDocumentCommand{\OArg}{ m }{\mbox{\texttt{[}\Argument{#1}\texttt{]}}}
+\NewDocumentCommand{\LArg}{ m }{\mbox{\texttt{<}\Argument{#1}\texttt{>}}}
+\NewDocumentCommand{\FArg}{ m }{\mbox{\texttt{\{#1\}}}}
+
+% General text
+\NewDocumentCommand{\Deprecated}{}{\textcolor{red!80!black}{(deprecated)}}
+\NewDocumentCommand{\Empty}{}{%
+    \mbox{\normalfont\textcolor{black!60}{\textsl{--empty--}}}
+}
+%\NewDocumentCommand{\FromPackage}{ m }{%
+%    \tikz\node[draw, rounded corners = 1.5pt, inner sep = 1.5pt,
+%        font = \sffamily\tiny] {#1};%
+%}
+
+% Options
+
+\NewDocumentCommand{\IndexOption}{ m }{%
+    \index{#1@\Option{#1}~(option)}%
+    \index{Options!#1@\Option{#1}}%
+}
+
+% Option: expands an option name
+\NewDocumentCommand{\Option}{ m }{%
+    \mbox{\textcolor{optioncolor}{\texttt{#1}}}%
+}
+
+% OptionInd: expands an option name and creates index entry
+\NewDocumentCommand{\OptionInd}{ m }{%
+    \IndexOption{#1}%
+    \Option{#1}%
+}
+
+% OptionRef: expands an option name and creates a cross reference to
+%    its definition
+\NewDocumentCommand{\OptionRef}{ m }{%
+    \hyperref[option:#1]{\Option{#1}}%
+}
+
+% OptionRefInd: expands an option name, creates a cross reference to
+%    its definition and adds an entry in the index
+\NewDocumentCommand{\OptionRefInd}{ m }{%
+    \IndexOption{#1}%
+    \hyperref[option:#1]{\Option{#1}}%
+}
+
+% option* (environment): shows the description of an option
+% #1: option name
+% #2: possible values that can be assigned to the option
+% #3: default value
+%
+% \begin{option}{width}{\Argument{length}|\Option{auto}}[\Option{auto}]
+\newlength{\docassignment}
+\newlength{\docdefault}
+\NewDocumentEnvironment{option*}{ m m m }{%
+    \settowidth{\docassignment}{#2}%
+    \settowidth{\docdefault}{#3}%
+    \begin{tcolorbox}
+    [
+        title = {%
+        \hspace{-2em}\Option{#1}%
+        \ifdimgreater{\docassignment}{0pt}{\Option{ = #2}}{}%
+        \ifdimgreater{\docdefault}{0pt}{\hfill\textit{Default:} #3}{}%
+        },
+        description,
+    ]
+        \label{option:#1}%
+        }{
+    \end{tcolorbox}%
+    \medskip%
+}
+
+% optiondef (environment):
+\NewDocumentEnvironment{optiondef}{ m m m }{
+    \begin{option*}{#1}{#2}{#3}
+        \IndexOption{#1}%
+        }{
+    \end{option*}
+
+}
+
+% Colors
+
+% Options
+
+\NewDocumentCommand{\IndexColor}{ m }{%
+    \index{#1@\Color{#1}~(color)}%
+    \index{Colors!#1@\Color{#1}}%
+}
+
+% Option: expands an option name
+\NewDocumentCommand{\Color}{ m }{%
+    \textcolor{colorcolor}{\texttt{\mbox{#1}}}%
+}
+
+% OptionInd: expands an option name and creates index entry
+\NewDocumentCommand{\ColorInd}{ m }{%
+    \IndexOption{#1}%
+    \Color{#1}%
+}
+
+% ColorDef: makes the definition of a color
+\NewDocumentCommand{\ColorDef}{ m }{%
+    \phantomsection%
+    \IndexColor{#1}%
+    \Color{#1}%
+    \label{color:#1}%
+}
+
+% OptionRef: expands an option name and creates a cross reference to
+%    its definition
+\NewDocumentCommand{\ColorRef}{ m }{%
+    \hyperref[color:#1]{\Color{#1}}%
+}
+
+
+% Macros
+
+\NewDocumentCommand{\IndexMacro}{ m }{%
+    \index{#1@\Macro{#1}}%
+    \index{Commands!#1@\Macro{#1}}%
+}
+
+
+\NewDocumentCommand{\Macro}{ m }{%
+    \expandafter\latexinline\expandafter{\csname#1\endcsname}%
+}
+\NewDocumentCommand{\MacroRef}{ m }{%
+    \hyperref[macro:#1]{\Macro{#1}}%
+}
+\NewDocumentCommand{\MacroDef}{ m }{%
+    \phantomsection%
+    \IndexMacro{#1}%
+    \label{macro:#1}%
+    %\refstepcounter{MacroCounter}%
+    \Macro{#1}%
+}
+\NewDocumentCommand{\MacroRefInd}{ m }{%
+    \IndexMacro{#1}%
+    \MacroRef{#1}%
+}
+
+
+% macro* (environment): shows the description of a macro
+\NewDocumentEnvironment{macro*}{ m m }{
+    \medskip\par%
+    \begin{tcolorbox}[
+        title = {\hspace{-2em}\Macro{#1}#2},
+        description,
+    ]
+    }{
+    \end{tcolorbox}%
+    \medskip%
+}
+
+\NewDocumentEnvironment{macrodef}{ m m }{%
+    \IndexMacro{#1}%
+    \begin{macro*}{#1}{#2}%
+        \label{macro:#1}%
+        }{%
+    \end{macro*}
+}
+
+
+% Environments
+\NewDocumentCommand{\IndexEnvironment}{ m }{%
+    \index{#1@\Environment{#1}~(environment)}%
+    \index{Environments!#1@\Environment{#1}}%
+}
+
+% Environment: expands an environment name
+\NewDocumentCommand{\Environment}{ m }{%
+    \mbox{\textcolor{environmentcolor}{\texttt{#1}}}%
+}
+
+% EnvironmentInd: expands an environment name and creates index entry
+\NewDocumentCommand{\EnvironmentInd}{ m }{%
+    \IndexEnvironment{#1}%
+    \Environment{#1}%
+}
+
+% EnvironmentRef: expands an environment name and creates a cross reference to
+%    its definition
+\NewDocumentCommand{\EnvironmentRef}{ m }{%
+    \hyperref[environment:#1]{\Environment{#1}}%
+}
+
+% environment* (environment): shows the description of an option
+% #1: environment name
+% #2: possible values that can be assigned to the environment
+\NewDocumentEnvironment{environment*}{ m m }{%
+    \begin{tcolorbox}
+    [
+        title = {%
+        \hspace{-2em}\Macro{begin}\texttt{\{}\Environment{#1}\texttt{\}}#2\par
+        \Argument{environment contents}\par
+        \hspace{-2em}\Macro{end}\texttt{\{}\Environment{#1}\texttt{\}}%
+        },
+        description,
+    ]
+        \label{environment:#1}%
+        }{%
+
+    \end{tcolorbox}%
+    \medskip%
+}
+
+\NewDocumentEnvironment{environment}{ m m }{%
+    \begin{environment*}{#1}{#2}
+        \IndexEnvironment{#1}
+        }{%
+    \end{environment*}
+}
+
+
+% Palette names
+\NewDocumentCommand{\IndexPalette}{ m }{%
+    \index{#1@\Palette{#1}~(palette)}%
+    \index{Palettes!#1@\Palette{#1}}%
+}
+
+
+\NewDocumentCommand{\Palette}{ m }{%
+    \mbox{\textcolor{palettecolor}{\texttt{#1}}}%
+}
+\NewDocumentCommand{\PaletteRef}{ m }{%
+    \hyperref[palette:#1]{\Palette{#1}}%
+}
+\NewDocumentCommand{\PaletteDef}{ m }{%
+    \phantomsection%
+    \IndexPalette{#1}%
+    \label{palette:#1}%
+    \Palette{#1}%
+}
+
+
+% Styles
+\NewDocumentCommand{\IndexStyle}{ m }{%
+    \index{#1@\Style{#1}~(style)}%
+    \index{Styles!#1@\Style{#1}}%
+}
+
+% Style: expands an environment name
+\NewDocumentCommand{\Style}{ m }{%
+    \mbox{\textcolor{stylecolor}{\texttt{#1}}}%
+}
+
+% StyleInd: expands an environment name and creates index entry
+\NewDocumentCommand{\StyleInd}{ m }{%
+    \IndexStyle{#1}%
+    \Style{#1}%
+}
+
+% StyleRef: expands an environment name and creates a cross reference to
+%    its definition
+\NewDocumentCommand{\StyleRef}{ m }{%
+    \hyperref[style:#1]{\Style{#1}}%
+}
+
+\NewDocumentCommand{\StyleDef}{ m }{%
+    \phantomsection%
+    \IndexStyle{#1}%
+    \label{style:#1}%
+    \Style{#1}%
+}
