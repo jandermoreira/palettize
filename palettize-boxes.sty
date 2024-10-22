@@ -136,7 +136,7 @@
             \path [fill = PLTBoxFrameColor] (North West) circle (1em);
             \path [thick, draw = PLTBoxTitleColor] ($(North West) + (0.9em, 0)$) arc (0:360:0.9em);
             %\path [draw = PLTBGColor!40!black, line width = 0.1em, ] ($(frame.north west) + (1.15em, -0.05em)$) -- ++(-0.1em, 0) arc (0:270:1em) -- ++(0, -0.1em);
-            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\textcolor{PLTBoxTitleColor}{\smaller\sffamily\PLTCounterStyle{tcbrasternum}}};
+            \node[align = center, text = PLTFGColor!10] at ($(frame.north west) + (0.05em, -0.05em)$) {\textcolor{PLTBoxTitleColor}{\smaller\sffamily\PLTBoxNumber}};
         },
     },
     handwriting/.style = {
@@ -146,7 +146,7 @@
         opacityback = 0,
         fontupper = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxFGColor!30!black},
         fontlower = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxFGColor!30!black},
-        fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxTitleColor},
+        fonttitle = \ifplt@HandwritingSupport\ECFJD\fi\color{PLTBoxFGColor!30!black},
         overlay = {
             \path[
                 decorate,
@@ -223,11 +223,11 @@
         rounded corners = south,
         drop fuzzy shadow southeast = PLTBGColor!50!black,
     },
-    %cleanest/.style = {
-    %    blankest,
-    %    opacityframe = 0,
-    %    opacityback = 0,
-    %},
+%cleanest/.style = {
+%    blankest,
+%    opacityframe = 0,
+%    opacityback = 0,
+%},
 }
 
 \PLTSet{
@@ -255,19 +255,25 @@
 
 
 % Code
-\NewDocumentCommand{\plt@ShowColorBox}{ +m }{%
+
+
+\NewDocumentCommand{\PLTBoxNumber}{}{%
+    \PLTCounterStyle{tcbrasternum}%
+}
+
+
+\NewDocumentCommand{\plt@ShowBoxInRaster}{ +m }{%
     \begin{tcolorbox}[plt box \theplt@BoxLevel, plt single item]
         #1%
-        %
-        %\tcblower
-        %\raggedright{\small \textbf{Color} = \texttt{\PLTBGColorName}}\par
-        %\raggedright{\small \textbf{Remember} = \texttt{\ifbool{plt@RememberContext}{True}{False}}}\par
-        %\raggedright{\small \textbf{Continue} = \texttt{\ifbool{plt@ContinueContext}{True}{False}}}\par
-        %\seekey{default box}
-        %\seekey{plt box \theplt@BoxLevel}
-        %\seekey{plt raster \theplt@BoxLevel}
     \end{tcolorbox}%
 }
+
+% plt@ShowItem: creates a tcolorbox in the PLTBox context
+% #1: type of the item (N, A, B, AB - see \PLTParseItemFromMacro)
+% #2: box options (in angle brackets)
+% #3: title (in regular brackets)
+% #4: text
+% #5: macro to actually render the box
 \NewDocumentCommand{\plt@ShowItem}{ m m m +m m }{%
     \PLTIfType{#1}{B, AB}{%
         \tcbset{plt single item/.append style = {squeezed title = {#3}}}%
@@ -323,12 +329,12 @@
         \booltrue{plt@RememberContext}%
     }{%
         \tcbset{plt box \theplt@BoxLevel/.copy = default box}%
-        %\tcbset{plt raster \theplt@BoxLevel/.copy = raster base style}%
+    %\tcbset{plt raster \theplt@BoxLevel/.copy = raster base style}%
     }%
     \ifbool{plt@RememberContext}{%
         \tcbset{plt context box \plt@ContextName/.copy = plt box \theplt@BoxLevel}%
-        %\tcbset{plt context raster \plt@ContextName/.copy = plt raster \theplt@BoxLevel}%
-        %\seekey{plt context raster \plt@ContextName}
+    %\tcbset{plt context raster \plt@ContextName/.copy = plt raster \theplt@BoxLevel}%
+    %\seekey{plt context raster \plt@ContextName}
     }{}%
     \begin{lrbox}{\plt@RasterContainer}
         \vspace*{0.5em}%
@@ -338,11 +344,11 @@
                 \booltrue{plt@RememberContext}%
             }{}%
             \PLTMapInline{%
-                %\par\seekey{plt raster \theplt@BoxLevel}\par
+            %\par\seekey{plt raster \theplt@BoxLevel}\par
                 \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
                 \tcbset{plt single item/.style = {}}%
                 \PLTCalculateBoxColors{PLTFGColor}{PLTBGColor}%
-                \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
+                \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowBoxInRaster}%
                 \PLTNextColor%
             }%
             \ifbool{plt@RememberContext}{%
@@ -360,27 +366,29 @@
     }{%
 }
 
-%\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
-%    \begingroup%
-%    \PLTGatherItems{#2}%
-%    \PLTResetLoop%
-%    \defcounter{plt@BoxNumber}{0}
-%    \tcbset{plt single item/.style = {#1}}%
-%    \PLTMapInline{%
-%        \stepcounter{plt@BoxNumber}
-%        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
-%        \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowColorBox}%
-%        \PLTNextColor%
-%    }
-%    }{%
-%    \endgroup
-%}
+\NewDocumentEnvironment{PLTBox}{ O{itemize} +b }{%
+    \begingroup%
+    \PLTGatherItems{#2}%
+    \PLTResetLoop%
+    \defcounter{plt@BoxNumber}{0}
+    \tcbset{plt single item/.style = {#1}}%
+    \PLTMapInline{%
+        \stepcounter{plt@BoxNumber}
+        \PLTParseItemFromMacro{\typeopt}{\angleopt}{\bracketopt}{\body}{\PLTInlineItem}%
+        \plt@ShowItem{\typeopt}{\angleopt}{\bracketopt}{\body}{\plt@ShowBoxInRaster}%
+        \PLTNextColor%
+    }
+    }{%
+    \endgroup
+}
 
 
 % PLTCalculateBoxColors: calulates the colors of a box based on
 % given foreground and background colors
 % #1: foreground color
 % #2: background color
+% todo: add an option to skip the calculation and use the actual
+%   palette colors
 \NewDocumentCommand{\PLTCalculateBoxColors}{ m m }{%
     \colorlet{PLTBoxFGColor}{#1}%
     \colorlet{PLTBoxBGColor}{#2}%
@@ -403,22 +411,18 @@
 \RequirePackage{amssymb}
 \NewDocumentCommand{\plt@SymbolSimple}{ m }{%
     \ensuremath{%
-        \ifcase#1%
-        \or *%
-        \or \dagger%
-        \or \ddagger%
-        \or \sharp%
-        \or \natural%
-        \or \bigstar%
-        \or \nmid%
-        \or \divideontimes%
-        \or \maltese%
-        \or \multimap%
-        %\or \spadesuit%
-        %\or \clubsuit%
-        %\or \blacklozenge%
-        %\or \circledast%
-        %\or \mathfrak{x}%
+        \ifcase
+            #1%
+            \or *%
+            \or \dagger%
+            \or \ddagger%
+            \or \sharp%
+            \or \natural%
+            \or \bigstar%
+            \or \nmid%
+            \or \divideontimes%
+            \or \maltese%
+            \or \multimap%
         \else%
             \@ctrerr%
         \fi%
@@ -428,7 +432,6 @@
 \NewDocumentCommand{\plt@FNSymbol}{ m }{%
     \plt@SymbolMulti{\csuse{the#1}}%
 }
-
 
 
 % pgfkeys patch
