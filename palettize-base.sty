@@ -178,15 +178,14 @@
 }
 
 % PLTPaletteName: expands to the current palette name
-\NewDocumentCommand{\PLTPaletteName}{ o }{
-        \exp_args:NV \tl_use:N \g_current_palette_tl
+\NewDocumentCommand{\PLTPaletteName}{ }{
+    \tl_use:N \g_current_palette_tl
 }
 
 % PLTGetPaletteNameCS: creates a macro with the current palette name
 \NewDocumentCommand{\plt@GetPaletteNameCS}{ m }{
-        \exp_args:Nne \tl_gset:cn { #1 } \g_current_palette_tl
+    \exp_args:Nne \tl_gset:cn { #1 } \g_current_palette_tl
 }
-
 
 
 % PLTNextColor: moves current color pointer to the next color
@@ -225,12 +224,17 @@
 %   color name is available in \PLTCurrentColor
 \NewExpandableDocumentCommand{\PLTIteratePalette}{ m +m }{
     \begingroup
-    \PLTUsePalette{#1}
-    \PLTResetLoop[#1]
-    \seq_map_inline:cn { g_#1_colors_seq } {
-        \PLTUseCurrentColor[#1]
+    \ifstrempty{#1}{
+        \csedef{plt@local@Palette}{\PLTPaletteName}
+    }{
+        \csedef{plt@local@Palette}{#1}
+        \PLTUsePalette{#1}
+    }
+    \PLTResetLoop
+    \seq_map_inline:cn { g_ \plt@local@Palette _colors_seq } {
+    %\PLTUseCurrentColor[\plt@local@Palette]
         #2
-        \PLTNextColor[#1]
+        \PLTNextColor
     }
     \endgroup%
 }
